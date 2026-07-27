@@ -24,15 +24,21 @@ try {
     }
 
     New-Item -ItemType Directory -Path build -Force | Out-Null
-    & $Iverilog.Source -g2012 -Wall -o build/rgb_to_grayscale.vvp `
-        rtl/rgb_to_grayscale.sv tb/tb_rgb_to_grayscale.sv
-    if ($LASTEXITCODE -ne 0) {
-        throw "SystemVerilog compilation failed."
-    }
+    $Testbenches = @(
+        @{ Name = "rgb_to_grayscale"; Rtl = "rtl/rgb_to_grayscale.sv"; Tb = "tb/tb_rgb_to_grayscale.sv" },
+        @{ Name = "threshold_to_mask"; Rtl = "rtl/threshold_to_mask.sv"; Tb = "tb/tb_threshold_to_mask.sv" }
+    )
+    foreach ($Testbench in $Testbenches) {
+        & $Iverilog.Source -g2012 -Wall -o "build/$($Testbench.Name).vvp" `
+            $Testbench.Rtl $Testbench.Tb
+        if ($LASTEXITCODE -ne 0) {
+            throw "SystemVerilog compilation failed for $($Testbench.Name)."
+        }
 
-    & $Vvp.Source build/rgb_to_grayscale.vvp
-    if ($LASTEXITCODE -ne 0) {
-        throw "SystemVerilog simulation failed."
+        & $Vvp.Source "build/$($Testbench.Name).vvp"
+        if ($LASTEXITCODE -ne 0) {
+            throw "SystemVerilog simulation failed for $($Testbench.Name)."
+        }
     }
 }
 finally {

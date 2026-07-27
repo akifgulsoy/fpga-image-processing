@@ -25,13 +25,13 @@ jobs:
       - name: Install Icarus Verilog
         run: sudo apt-get update && sudo apt-get install -y iverilog
 
-      - name: Compile RTL testbench
+      - name: Compile and run RTL testbenches
         run: |
           mkdir -p build
-          iverilog -g2012 -Wall \
-            -o build/rgb_to_grayscale.vvp \
-            rtl/rgb_to_grayscale.sv \
-            tb/tb_rgb_to_grayscale.sv
-
-      - name: Run RTL simulation
-        run: vvp build/rgb_to_grayscale.vvp
+          for block in rgb_to_grayscale threshold_to_mask; do
+            iverilog -g2012 -Wall \
+              -o build/${block}.vvp \
+              rtl/${block}.sv \
+              tb/tb_${block}.sv
+            vvp build/${block}.vvp
+          done

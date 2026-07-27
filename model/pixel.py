@@ -16,3 +16,15 @@ def rgb_to_grayscale(red: int, green: int, blue: int) -> int:
     green = _channel(green, "green")
     blue = _channel(blue, "blue")
     return (77 * red + 150 * green + 29 * blue + 128) >> 8
+
+
+def threshold_to_mask(gray: int, threshold: int = 128) -> int:
+    """Convert an 8-bit grayscale pixel to a binary mask bit.
+
+    Pixels at or above ``threshold`` map to one, matching the RTL's
+    unsigned greater-than-or-equal comparison.
+    """
+
+    gray = _channel(gray, "gray")
+    threshold = _channel(threshold, "threshold")
+    return int(gray >= threshold)

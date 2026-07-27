@@ -1,6 +1,6 @@
 import unittest
 
-from model import rgb_to_grayscale
+from model import rgb_to_grayscale, threshold_to_mask
 
 
 class RgbToGrayscaleTests(unittest.TestCase):
@@ -32,6 +32,25 @@ class RgbToGrayscaleTests(unittest.TestCase):
             with self.subTest(pixel=pixel):
                 with self.assertRaises((TypeError, ValueError)):
                     rgb_to_grayscale(*pixel)
+
+
+class ThresholdToMaskTests(unittest.TestCase):
+    def test_default_threshold_boundary(self) -> None:
+        self.assertEqual(threshold_to_mask(127), 0)
+        self.assertEqual(threshold_to_mask(128), 1)
+        self.assertEqual(threshold_to_mask(255), 1)
+
+    def test_configurable_threshold_boundary(self) -> None:
+        self.assertEqual(threshold_to_mask(31, 32), 0)
+        self.assertEqual(threshold_to_mask(32, 32), 1)
+        self.assertEqual(threshold_to_mask(0, 0), 1)
+        self.assertEqual(threshold_to_mask(255, 255), 1)
+
+    def test_rejects_invalid_values(self) -> None:
+        for gray, threshold in ((-1, 128), (256, 128), (128, -1), (128, True)):
+            with self.subTest(gray=gray, threshold=threshold):
+                with self.assertRaises((TypeError, ValueError)):
+                    threshold_to_mask(gray, threshold)
 
 
 if __name__ == "__main__":

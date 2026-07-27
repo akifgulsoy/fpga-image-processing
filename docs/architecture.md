@@ -24,3 +24,10 @@ gray = (77 * red + 150 * green + 29 * blue + 128) / 256
 
 The coefficients sum to 256, so black maps to 0 and white maps to 255. Adding
 128 provides round-to-nearest behavior before the right shift.
+
+## Threshold and binary mask
+
+`threshold_to_mask` has one registered output and follows the same ready/valid
+contract as the grayscale stage. It compares each unsigned 8-bit grayscale
+pixel against the `THRESHOLD` parameter (128 by default). A pixel transfers as
+mask bit `1` when `gray >= THRESHOLD`; otherwise it transfers as `0`.

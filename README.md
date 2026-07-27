@@ -18,6 +18,10 @@ multiplier-sized floating-point logic. The stream uses valid/ready
 backpressure and holds its output stable while the downstream block is
 stalled.
 
+The next block converts grayscale pixels to a binary mask. Its unsigned,
+configurable threshold defaults to 128: pixels below it produce `0`, while
+pixels equal to or above it produce `1`.
+
 ## Repository layout
 
 ```text

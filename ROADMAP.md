@@ -7,7 +7,7 @@ reference model, self-checking tests, and concise documentation.
 ## Milestone 1 — Pixel primitives
 
 - [x] RGB888 to grayscale conversion
-- [ ] Threshold and binary-mask stage
+- [x] Threshold and binary-mask stage
 - [ ] Brightness and contrast adjustment
 - [ ] Pixel stream register slice
 
