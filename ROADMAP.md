@@ -8,7 +8,7 @@ reference model, self-checking tests, and concise documentation.
 
 - [x] RGB888 to grayscale conversion
 - [x] Threshold and binary-mask stage
-- [ ] Brightness and contrast adjustment
+- [x] Brightness and contrast adjustment
 - [ ] Pixel stream register slice
 
 ## Milestone 2 — Neighborhood operations

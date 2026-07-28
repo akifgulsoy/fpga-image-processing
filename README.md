@@ -22,6 +22,10 @@ The next block converts grayscale pixels to a binary mask. Its unsigned,
 configurable threshold defaults to 128: pixels below it produce `0`, while
 pixels equal to or above it produce `1`.
 
+The brightness/contrast block adjusts a grayscale pixel around midpoint 128.
+`BRIGHTNESS` is signed in output-code values and `CONTRAST_Q8` is signed 8.8
+fixed point (256 is unity); results saturate to the 0--255 range.
+
 ## Repository layout
 
 ```text

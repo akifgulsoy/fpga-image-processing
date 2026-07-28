@@ -28,3 +28,22 @@ def threshold_to_mask(gray: int, threshold: int = 128) -> int:
     gray = _channel(gray, "gray")
     threshold = _channel(threshold, "threshold")
     return int(gray >= threshold)
+
+
+def brightness_contrast(
+    gray: int, brightness: int = 0, contrast_q8: int = 256
+) -> int:
+    """Apply signed brightness and 8.8 fixed-point contrast with saturation."""
+
+    gray = _channel(gray, "gray")
+    if not isinstance(brightness, int) or isinstance(brightness, bool):
+        raise TypeError("brightness must be an integer")
+    if not -512 <= brightness <= 511:
+        raise ValueError("brightness must be in the range -512..511")
+    if not isinstance(contrast_q8, int) or isinstance(contrast_q8, bool):
+        raise TypeError("contrast_q8 must be an integer")
+    if not -32768 <= contrast_q8 <= 32767:
+        raise ValueError("contrast_q8 must be in the range -32768..32767")
+
+    adjusted = ((gray - 128) * contrast_q8 >> 8) + 128 + brightness
+    return max(0, min(255, adjusted))

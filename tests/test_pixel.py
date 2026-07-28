@@ -1,6 +1,6 @@
 import unittest
 
-from model import rgb_to_grayscale, threshold_to_mask
+from model import brightness_contrast, rgb_to_grayscale, threshold_to_mask
 
 
 class RgbToGrayscaleTests(unittest.TestCase):
@@ -51,6 +51,25 @@ class ThresholdToMaskTests(unittest.TestCase):
             with self.subTest(gray=gray, threshold=threshold):
                 with self.assertRaises((TypeError, ValueError)):
                     threshold_to_mask(gray, threshold)
+
+
+class BrightnessContrastTests(unittest.TestCase):
+    def test_identity_defaults(self) -> None:
+        for gray in range(256):
+            with self.subTest(gray=gray):
+                self.assertEqual(brightness_contrast(gray), gray)
+
+    def test_brightness_contrast_and_saturation(self) -> None:
+        self.assertEqual(brightness_contrast(128, brightness=16, contrast_q8=512), 144)
+        self.assertEqual(brightness_contrast(120, brightness=16, contrast_q8=512), 128)
+        self.assertEqual(brightness_contrast(0, brightness=16, contrast_q8=512), 0)
+        self.assertEqual(brightness_contrast(255, brightness=16, contrast_q8=512), 255)
+
+    def test_rejects_invalid_parameters(self) -> None:
+        for args in ((0, 512, 256), (0, 0, 32768), (0, True, 256), (0, 0, False)):
+            with self.subTest(args=args):
+                with self.assertRaises((TypeError, ValueError)):
+                    brightness_contrast(*args)
 
 
 if __name__ == "__main__":

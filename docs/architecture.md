@@ -31,3 +31,12 @@ The coefficients sum to 256, so black maps to 0 and white maps to 255. Adding
 contract as the grayscale stage. It compares each unsigned 8-bit grayscale
 pixel against the `THRESHOLD` parameter (128 by default). A pixel transfers as
 mask bit `1` when `gray >= THRESHOLD`; otherwise it transfers as `0`.
+
+## Brightness and contrast
+
+`brightness_contrast` has one registered output and preserves the stream
+contract under backpressure. It calculates
+`((gray - 128) * CONTRAST_Q8 >>> 8) + 128 + BRIGHTNESS`, then saturates the
+result to unsigned 8-bit range. `CONTRAST_Q8` is signed 8.8 fixed point, so
+its default value of 256 is unity gain; `BRIGHTNESS` is a signed output-code
+offset.
