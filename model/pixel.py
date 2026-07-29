@@ -47,3 +47,39 @@ def brightness_contrast(
 
     adjusted = ((gray - 128) * contrast_q8 >> 8) + 128 + brightness
     return max(0, min(255, adjusted))
+
+
+class PixelStreamRegisterSlice:
+    """Cycle-accurate model of the one-entry ready/valid register slice."""
+
+    def __init__(self, data_width: int = 8) -> None:
+        if not isinstance(data_width, int) or isinstance(data_width, bool):
+            raise TypeError("data_width must be an integer")
+        if data_width <= 0:
+            raise ValueError("data_width must be positive")
+        self.data_width = data_width
+        self.reset()
+
+    def reset(self) -> None:
+        """Apply the RTL reset state."""
+
+        self.m_valid = False
+        self.m_data = 0
+
+    def step(self, s_valid: bool, s_data: int, m_ready: bool) -> tuple[bool, bool, int]:
+        """Return combinational signals, then advance one rising clock edge."""
+
+        if not isinstance(s_valid, bool) or not isinstance(m_ready, bool):
+            raise TypeError("valid and ready signals must be booleans")
+        if not isinstance(s_data, int) or isinstance(s_data, bool):
+            raise TypeError("s_data must be an integer")
+        if not 0 <= s_data < (1 << self.data_width):
+            raise ValueError("s_data does not fit data_width")
+
+        s_ready = not self.m_valid or m_ready
+        outputs = (s_ready, self.m_valid, self.m_data)
+        if s_ready:
+            self.m_valid = s_valid
+            if s_valid:
+                self.m_data = s_data
+        return outputs

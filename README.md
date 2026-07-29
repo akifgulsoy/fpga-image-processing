@@ -26,6 +26,10 @@ The brightness/contrast block adjusts a grayscale pixel around midpoint 128.
 `BRIGHTNESS` is signed in output-code values and `CONTRAST_Q8` is signed 8.8
 fixed point (256 is unity); results saturate to the 0--255 range.
 
+`pixel_stream_register_slice` is a parameterized one-entry ready/valid buffer
+for inserting a registered boundary between compatible pixel-stream stages.
+It preserves payload and valid while downstream backpressure is asserted.
+
 ## Repository layout
 
 ```text

@@ -40,3 +40,10 @@ contract under backpressure. It calculates
 result to unsigned 8-bit range. `CONTRAST_Q8` is signed 8.8 fixed point, so
 its default value of 256 is unity gain; `BRIGHTNESS` is a signed output-code
 offset.
+
+## Pixel stream register slice
+
+`pixel_stream_register_slice` provides a parameterized-width, one-entry
+registered boundary for any compatible ready/valid pixel stream. It accepts
+an input when its register is empty or the current output is accepted, and
+holds the registered payload stable while downstream `ready` is low.

@@ -27,7 +27,8 @@ try {
     $Testbenches = @(
         @{ Name = "rgb_to_grayscale"; Rtl = "rtl/rgb_to_grayscale.sv"; Tb = "tb/tb_rgb_to_grayscale.sv" },
         @{ Name = "threshold_to_mask"; Rtl = "rtl/threshold_to_mask.sv"; Tb = "tb/tb_threshold_to_mask.sv" },
-        @{ Name = "brightness_contrast"; Rtl = "rtl/brightness_contrast.sv"; Tb = "tb/tb_brightness_contrast.sv" }
+        @{ Name = "brightness_contrast"; Rtl = "rtl/brightness_contrast.sv"; Tb = "tb/tb_brightness_contrast.sv" },
+        @{ Name = "pixel_stream_register_slice"; Rtl = "rtl/pixel_stream_register_slice.sv"; Tb = "tb/tb_pixel_stream_register_slice.sv" }
     )
     foreach ($Testbench in $Testbenches) {
         & $Iverilog.Source -g2012 -Wall -o "build/$($Testbench.Name).vvp" `

@@ -1,6 +1,11 @@
 import unittest
 
-from model import brightness_contrast, rgb_to_grayscale, threshold_to_mask
+from model import (
+    PixelStreamRegisterSlice,
+    brightness_contrast,
+    rgb_to_grayscale,
+    threshold_to_mask,
+)
 
 
 class RgbToGrayscaleTests(unittest.TestCase):
@@ -70,6 +75,30 @@ class BrightnessContrastTests(unittest.TestCase):
             with self.subTest(args=args):
                 with self.assertRaises((TypeError, ValueError)):
                     brightness_contrast(*args)
+
+
+class PixelStreamRegisterSliceTests(unittest.TestCase):
+    def test_captures_and_forwards_data(self) -> None:
+        dut = PixelStreamRegisterSlice()
+        self.assertEqual(dut.step(True, 37, True), (True, False, 0))
+        self.assertEqual(dut.step(False, 0, True), (True, True, 37))
+        self.assertEqual(dut.step(False, 0, True), (True, False, 37))
+
+    def test_holds_payload_during_backpressure(self) -> None:
+        dut = PixelStreamRegisterSlice()
+        dut.step(True, 91, False)
+        self.assertEqual(dut.step(False, 0, False), (False, True, 91))
+        self.assertEqual(dut.step(True, 12, False), (False, True, 91))
+        self.assertEqual(dut.step(False, 0, True), (True, True, 91))
+
+    def test_validates_width_and_inputs(self) -> None:
+        with self.assertRaises(ValueError):
+            PixelStreamRegisterSlice(0)
+        dut = PixelStreamRegisterSlice(4)
+        with self.assertRaises(ValueError):
+            dut.step(True, 16, True)
+        with self.assertRaises(TypeError):
+            dut.step(1, 0, True)
 
 
 if __name__ == "__main__":
