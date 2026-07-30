@@ -47,3 +47,12 @@ offset.
 registered boundary for any compatible ready/valid pixel stream. It accepts
 an input when its register is empty or the current output is accepted, and
 holds the registered payload stable while downstream `ready` is low.
+
+## Three-line buffer
+
+`three_line_buffer` stores two prior raster rows for a fixed `LINE_PIXELS`
+width. On each accepted input pixel, it emits that pixel and the two stored
+pixels at the current column, then updates both history rows and advances the
+column. The column advances only on input transfers, so downstream
+backpressure preserves raster alignment. Reset clears the histories, making
+the unavailable prior rows zero-filled.

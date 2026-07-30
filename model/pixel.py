@@ -83,3 +83,62 @@ class PixelStreamRegisterSlice:
             if s_valid:
                 self.m_data = s_data
         return outputs
+
+
+class ThreeLineBuffer:
+    """Cycle-accurate model of a current-plus-two-prior-line buffer."""
+
+    def __init__(self, pixel_width: int = 8, line_pixels: int = 640) -> None:
+        if not isinstance(pixel_width, int) or isinstance(pixel_width, bool):
+            raise TypeError("pixel_width must be an integer")
+        if not isinstance(line_pixels, int) or isinstance(line_pixels, bool):
+            raise TypeError("line_pixels must be an integer")
+        if pixel_width <= 0:
+            raise ValueError("pixel_width must be positive")
+        if line_pixels <= 0:
+            raise ValueError("line_pixels must be positive")
+        self.pixel_width = pixel_width
+        self.line_pixels = line_pixels
+        self.reset()
+
+    def reset(self) -> None:
+        """Apply the RTL reset state, clearing the two prior line histories."""
+
+        self.column = 0
+        self.line1 = [0] * self.line_pixels
+        self.line2 = [0] * self.line_pixels
+        self.m_valid = False
+        self.m_pixel = 0
+        self.m_line1_pixel = 0
+        self.m_line2_pixel = 0
+
+    def step(
+        self, s_valid: bool, s_pixel: int, m_ready: bool
+    ) -> tuple[bool, bool, int, int, int]:
+        """Return combinational signals, then advance one rising clock edge."""
+
+        if not isinstance(s_valid, bool) or not isinstance(m_ready, bool):
+            raise TypeError("valid and ready signals must be booleans")
+        if not isinstance(s_pixel, int) or isinstance(s_pixel, bool):
+            raise TypeError("s_pixel must be an integer")
+        if not 0 <= s_pixel < (1 << self.pixel_width):
+            raise ValueError("s_pixel does not fit pixel_width")
+
+        s_ready = not self.m_valid or m_ready
+        outputs = (
+            s_ready,
+            self.m_valid,
+            self.m_pixel,
+            self.m_line1_pixel,
+            self.m_line2_pixel,
+        )
+        if s_ready:
+            self.m_valid = s_valid
+            if s_valid:
+                self.m_pixel = s_pixel
+                self.m_line1_pixel = self.line1[self.column]
+                self.m_line2_pixel = self.line2[self.column]
+                self.line2[self.column] = self.line1[self.column]
+                self.line1[self.column] = s_pixel
+                self.column = (self.column + 1) % self.line_pixels
+        return outputs

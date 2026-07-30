@@ -2,6 +2,7 @@ import unittest
 
 from model import (
     PixelStreamRegisterSlice,
+    ThreeLineBuffer,
     brightness_contrast,
     rgb_to_grayscale,
     threshold_to_mask,
@@ -99,6 +100,36 @@ class PixelStreamRegisterSliceTests(unittest.TestCase):
             dut.step(True, 16, True)
         with self.assertRaises(TypeError):
             dut.step(1, 0, True)
+
+
+class ThreeLineBufferTests(unittest.TestCase):
+    def test_returns_current_and_prior_rows_at_matching_column(self) -> None:
+        dut = ThreeLineBuffer(line_pixels=4)
+        samples = [10, 11, 12, 13, 20, 21, 22, 23, 30]
+        expected = [
+            (0, 0), (0, 0), (0, 0), (0, 0),
+            (10, 0), (11, 0), (12, 0), (13, 0), (20, 10),
+        ]
+        for pixel, (line1, line2) in zip(samples, expected):
+            dut.step(True, pixel, True)
+            outputs = dut.step(False, 0, True)
+            self.assertEqual(outputs, (True, True, pixel, line1, line2))
+
+    def test_holds_all_outputs_during_backpressure(self) -> None:
+        dut = ThreeLineBuffer(line_pixels=2)
+        dut.step(True, 7, False)
+        self.assertEqual(dut.step(False, 0, False), (False, True, 7, 0, 0))
+        self.assertEqual(dut.step(True, 9, False), (False, True, 7, 0, 0))
+        self.assertEqual(dut.step(False, 0, True), (True, True, 7, 0, 0))
+
+    def test_validates_parameters_and_input_width(self) -> None:
+        with self.assertRaises(ValueError):
+            ThreeLineBuffer(line_pixels=0)
+        dut = ThreeLineBuffer(pixel_width=4, line_pixels=1)
+        with self.assertRaises(ValueError):
+            dut.step(True, 16, True)
+        with self.assertRaises(TypeError):
+            dut.step(True, False, True)
 
 
 if __name__ == "__main__":

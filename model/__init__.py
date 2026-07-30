@@ -2,6 +2,7 @@
 
 from .pixel import (
     PixelStreamRegisterSlice,
+    ThreeLineBuffer,
     brightness_contrast,
     rgb_to_grayscale,
     threshold_to_mask,
@@ -9,6 +10,7 @@ from .pixel import (
 
 __all__ = [
     "PixelStreamRegisterSlice",
+    "ThreeLineBuffer",
     "brightness_contrast",
     "rgb_to_grayscale",
     "threshold_to_mask",
