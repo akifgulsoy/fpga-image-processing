@@ -14,7 +14,7 @@ reference model, self-checking tests, and concise documentation.
 ## Milestone 2 — Neighborhood operations
 
 - [x] Parameterized three-line buffer
-- [ ] 3x3 convolution window generator
+- [x] 3x3 convolution window generator
 - [ ] Sobel X/Y kernels
 - [ ] Gradient magnitude approximation
 

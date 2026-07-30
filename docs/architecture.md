@@ -56,3 +56,12 @@ pixels at the current column, then updates both history rows and advances the
 column. The column advances only on input transfers, so downstream
 backpressure preserves raster alignment. Reset clears the histories, making
 the unavailable prior rows zero-filled.
+
+## 3x3 convolution window
+
+`convolution_window_3x3` extends the two-row history with horizontal shift
+registers. Each accepted pixel produces a registered window whose bottom-right
+entry is the current pixel; its top and middle rows are the corresponding
+pixels from the two prior rows. The first two raster rows and the leftmost
+column are zero-filled. Horizontal state resets at each fixed-width line
+boundary, and all state advances only on a ready/valid input transfer.

@@ -29,7 +29,8 @@ try {
         @{ Name = "threshold_to_mask"; Rtl = "rtl/threshold_to_mask.sv"; Tb = "tb/tb_threshold_to_mask.sv" },
         @{ Name = "brightness_contrast"; Rtl = "rtl/brightness_contrast.sv"; Tb = "tb/tb_brightness_contrast.sv" },
         @{ Name = "pixel_stream_register_slice"; Rtl = "rtl/pixel_stream_register_slice.sv"; Tb = "tb/tb_pixel_stream_register_slice.sv" },
-        @{ Name = "three_line_buffer"; Rtl = "rtl/three_line_buffer.sv"; Tb = "tb/tb_three_line_buffer.sv" }
+        @{ Name = "three_line_buffer"; Rtl = "rtl/three_line_buffer.sv"; Tb = "tb/tb_three_line_buffer.sv" },
+        @{ Name = "convolution_window_3x3"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_3x3.sv" }
     )
     foreach ($Testbench in $Testbenches) {
         & $Iverilog.Source -g2012 -Wall -o "build/$($Testbench.Name).vvp" `

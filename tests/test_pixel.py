@@ -1,6 +1,7 @@
 import unittest
 
 from model import (
+    ConvolutionWindow3x3,
     PixelStreamRegisterSlice,
     ThreeLineBuffer,
     brightness_contrast,
@@ -126,6 +127,45 @@ class ThreeLineBufferTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ThreeLineBuffer(line_pixels=0)
         dut = ThreeLineBuffer(pixel_width=4, line_pixels=1)
+        with self.assertRaises(ValueError):
+            dut.step(True, 16, True)
+        with self.assertRaises(TypeError):
+            dut.step(True, False, True)
+
+
+class ConvolutionWindow3x3Tests(unittest.TestCase):
+    def test_generates_raster_windows_with_zero_filled_borders(self) -> None:
+        dut = ConvolutionWindow3x3(line_pixels=3)
+        samples = [10, 11, 12, 20, 21, 22, 30, 31, 32]
+        expected = [
+            (0, 0, 0, 0, 0, 0, 0, 0, 10),
+            (0, 0, 0, 0, 0, 0, 0, 10, 11),
+            (0, 0, 0, 0, 0, 0, 10, 11, 12),
+            (0, 0, 0, 0, 0, 10, 0, 0, 20),
+            (0, 0, 0, 0, 10, 11, 0, 20, 21),
+            (0, 0, 0, 10, 11, 12, 20, 21, 22),
+            (0, 0, 10, 0, 0, 20, 0, 0, 30),
+            (0, 10, 11, 0, 20, 21, 0, 30, 31),
+            (10, 11, 12, 20, 21, 22, 30, 31, 32),
+        ]
+        for pixel, window in zip(samples, expected):
+            dut.step(True, pixel, True)
+            self.assertEqual(dut.step(False, 0, True), (True, True, window))
+
+    def test_holds_window_during_backpressure(self) -> None:
+        dut = ConvolutionWindow3x3(line_pixels=2)
+        dut.step(True, 7, False)
+        self.assertEqual(
+            dut.step(False, 0, False), (False, True, (0, 0, 0, 0, 0, 0, 0, 0, 7))
+        )
+        self.assertEqual(
+            dut.step(True, 9, False), (False, True, (0, 0, 0, 0, 0, 0, 0, 0, 7))
+        )
+
+    def test_validates_parameters_and_input_width(self) -> None:
+        with self.assertRaises(ValueError):
+            ConvolutionWindow3x3(line_pixels=0)
+        dut = ConvolutionWindow3x3(pixel_width=4, line_pixels=1)
         with self.assertRaises(ValueError):
             dut.step(True, 16, True)
         with self.assertRaises(TypeError):

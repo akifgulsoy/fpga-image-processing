@@ -28,7 +28,7 @@ jobs:
       - name: Compile and run RTL testbenches
         run: |
           mkdir -p build
-          for block in rgb_to_grayscale threshold_to_mask brightness_contrast pixel_stream_register_slice three_line_buffer; do
+          for block in rgb_to_grayscale threshold_to_mask brightness_contrast pixel_stream_register_slice three_line_buffer convolution_window_3x3; do
             iverilog -g2012 -Wall \
               -o build/${block}.vvp \
               rtl/${block}.sv \
