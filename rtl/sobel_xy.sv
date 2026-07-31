@@ -14,12 +14,12 @@ module sobel_xy #(
 
     always_comb begin
         s_ready_o = ~m_valid_o | m_ready_i;
-        gx_next = $signed({1'b0, s_top_right_i}) - $signed({1'b0, s_top_left_i})
-                + ($signed({1'b0, s_mid_right_i}) <<< 1) - ($signed({1'b0, s_mid_left_i}) <<< 1)
-                + $signed({1'b0, s_bot_right_i}) - $signed({1'b0, s_bot_left_i});
-        gy_next = $signed({1'b0, s_bot_left_i}) - $signed({1'b0, s_top_left_i})
-                + ($signed({1'b0, s_bot_mid_i}) <<< 1) - ($signed({1'b0, s_top_mid_i}) <<< 1)
-                + $signed({1'b0, s_bot_right_i}) - $signed({1'b0, s_top_right_i});
+        gx_next = $signed({3'b000, s_top_right_i}) - $signed({3'b000, s_top_left_i})
+                + ($signed({3'b000, s_mid_right_i}) <<< 1) - ($signed({3'b000, s_mid_left_i}) <<< 1)
+                + $signed({3'b000, s_bot_right_i}) - $signed({3'b000, s_bot_left_i});
+        gy_next = $signed({3'b000, s_bot_left_i}) - $signed({3'b000, s_top_left_i})
+                + ($signed({3'b000, s_bot_mid_i}) <<< 1) - ($signed({3'b000, s_top_mid_i}) <<< 1)
+                + $signed({3'b000, s_bot_right_i}) - $signed({3'b000, s_top_right_i});
     end
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
