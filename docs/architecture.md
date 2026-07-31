@@ -65,3 +65,11 @@ entry is the current pixel; its top and middle rows are the corresponding
 pixels from the two prior rows. The first two raster rows and the leftmost
 column are zero-filled. Horizontal state resets at each fixed-width line
 boundary, and all state advances only on a ready/valid input transfer.
+
+## Sobel X/Y kernels
+
+`sobel_xy` consumes a 3x3 grayscale window and registers the signed gradients:
+`Gx = (tr - tl) + 2(mr - ml) + (br - bl)` and
+`Gy = (bl - tl) + 2(bm - tm) + (br - tr)`. For 8-bit pixels each result fits
+in signed 11 bits (-1020 through 1020), and the output stays stable while
+downstream backpressure is asserted.

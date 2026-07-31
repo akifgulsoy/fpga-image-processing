@@ -3,9 +3,11 @@ import unittest
 from model import (
     ConvolutionWindow3x3,
     PixelStreamRegisterSlice,
+    SobelXy,
     ThreeLineBuffer,
     brightness_contrast,
     rgb_to_grayscale,
+    sobel_xy,
     threshold_to_mask,
 )
 
@@ -170,6 +172,23 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
             dut.step(True, 16, True)
         with self.assertRaises(TypeError):
             dut.step(True, False, True)
+
+
+class SobelXyTests(unittest.TestCase):
+    def test_detects_horizontal_and_vertical_edges(self) -> None:
+        self.assertEqual(sobel_xy((0, 0, 255, 0, 0, 255, 0, 0, 255)), (1020, 0))
+        self.assertEqual(sobel_xy((255, 255, 255, 0, 0, 0, 0, 0, 0)), (0, -1020))
+
+    def test_holds_signed_gradients_during_backpressure(self) -> None:
+        dut = SobelXy()
+        window = (255, 0, 0, 255, 0, 0, 255, 0, 0)
+        dut.step(True, window, False)
+        self.assertEqual(dut.step(False, (0,) * 9, False), (False, True, -1020, 0))
+        self.assertEqual(dut.step(True, (0,) * 9, False), (False, True, -1020, 0))
+
+    def test_rejects_invalid_window(self) -> None:
+        with self.assertRaises(ValueError): sobel_xy((0,) * 8)
+        with self.assertRaises(ValueError): sobel_xy((0,) * 8 + (256,))
 
 
 if __name__ == "__main__":

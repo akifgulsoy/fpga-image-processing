@@ -209,3 +209,42 @@ class ConvolutionWindow3x3:
                     self.mid_left, self.mid_mid = self.mid_mid, mid_right
                     self.bot_left, self.bot_mid = self.bot_mid, s_pixel
         return outputs
+
+
+def sobel_xy(window: tuple[int, ...], pixel_width: int = 8) -> tuple[int, int]:
+    """Calculate signed Sobel X/Y gradients for one 3x3 grayscale window."""
+    if not isinstance(pixel_width, int) or isinstance(pixel_width, bool):
+        raise TypeError("pixel_width must be an integer")
+    if pixel_width <= 0:
+        raise ValueError("pixel_width must be positive")
+    if not isinstance(window, tuple) or len(window) != 9:
+        raise ValueError("window must be a nine-element tuple")
+    maximum = (1 << pixel_width) - 1
+    if any(not isinstance(pixel, int) or isinstance(pixel, bool) or not 0 <= pixel <= maximum for pixel in window):
+        raise ValueError("window pixels must fit pixel_width")
+    tl, tm, tr, ml, _mm, mr, bl, bm, br = window
+    return (tr - tl + 2 * (mr - ml) + br - bl,
+            bl - tl + 2 * (bm - tm) + br - tr)
+
+
+class SobelXy:
+    """Cycle-accurate model of the registered Sobel X/Y stage."""
+    def __init__(self, pixel_width: int = 8) -> None:
+        self.pixel_width = pixel_width
+        self.reset()
+
+    def reset(self) -> None:
+        self.m_valid = False
+        self.m_gx = self.m_gy = 0
+
+    def step(self, s_valid: bool, window: tuple[int, ...], m_ready: bool) -> tuple[bool, bool, int, int]:
+        if not isinstance(s_valid, bool) or not isinstance(m_ready, bool):
+            raise TypeError("valid and ready signals must be booleans")
+        gradients = sobel_xy(window, self.pixel_width)
+        s_ready = not self.m_valid or m_ready
+        outputs = (s_ready, self.m_valid, self.m_gx, self.m_gy)
+        if s_ready:
+            self.m_valid = s_valid
+            if s_valid:
+                self.m_gx, self.m_gy = gradients
+        return outputs

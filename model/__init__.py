@@ -3,17 +3,21 @@
 from .pixel import (
     ConvolutionWindow3x3,
     PixelStreamRegisterSlice,
+    SobelXy,
     ThreeLineBuffer,
     brightness_contrast,
     rgb_to_grayscale,
+    sobel_xy,
     threshold_to_mask,
 )
 
 __all__ = [
     "ConvolutionWindow3x3",
     "PixelStreamRegisterSlice",
+    "SobelXy",
     "ThreeLineBuffer",
     "brightness_contrast",
     "rgb_to_grayscale",
+    "sobel_xy",
     "threshold_to_mask",
 ]
