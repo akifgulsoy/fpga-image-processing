@@ -28,6 +28,7 @@ module tb_sobel_xy;
         s_mid_left_i=0; s_mid_right_i=0;
         s_bot_left_i=0; s_bot_mid_i=0; s_bot_right_i=0;
         send_and_check(0, -1020);
+        @(negedge clk_i);
         m_ready_i = 1'b0;
         s_top_left_i=255; s_top_mid_i=0; s_top_right_i=0;
         s_mid_left_i=255; s_mid_right_i=0;
