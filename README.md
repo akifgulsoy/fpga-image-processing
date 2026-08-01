@@ -40,6 +40,10 @@ into a zero-filled 3x3 window, suitable for streaming convolution kernels.
 `sobel_xy` applies signed Sobel X and Y kernels to a 3x3 grayscale window.
 For 8-bit input pixels, each result is an 11-bit signed gradient.
 
+`gradient_magnitude` approximates edge strength as `abs(Gx) + abs(Gy)`. Its
+11-bit unsigned output saturates at 2047 and preserves ready/valid
+backpressure.
+
 ## Repository layout
 
 ```text

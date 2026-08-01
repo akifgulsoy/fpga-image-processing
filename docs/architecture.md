@@ -73,3 +73,10 @@ boundary, and all state advances only on a ready/valid input transfer.
 `Gy = (bl - tl) + 2(bm - tm) + (br - tr)`. For 8-bit pixels each result fits
 in signed 11 bits (-1020 through 1020), and the output stays stable while
 downstream backpressure is asserted.
+
+## Gradient magnitude
+
+`gradient_magnitude` calculates the hardware-friendly L1 approximation
+`abs(Gx) + abs(Gy)` from signed Sobel gradients. It registers the unsigned
+result, saturating at the representable 11-bit maximum (2047 for 8-bit
+pixels), and holds it stable until the downstream stage accepts it.

@@ -248,3 +248,42 @@ class SobelXy:
             if s_valid:
                 self.m_gx, self.m_gy = gradients
         return outputs
+
+
+def gradient_magnitude(gx: int, gy: int, pixel_width: int = 8) -> int:
+    """Approximate gradient magnitude as saturated ``abs(gx) + abs(gy)``."""
+    if not isinstance(pixel_width, int) or isinstance(pixel_width, bool):
+        raise TypeError("pixel_width must be an integer")
+    if pixel_width <= 0:
+        raise ValueError("pixel_width must be positive")
+    limit = 1 << (pixel_width + 2)
+    for value, name in ((gx, "gx"), (gy, "gy")):
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise TypeError(f"{name} must be an integer")
+        if not -limit <= value < limit:
+            raise ValueError(f"{name} does not fit the signed gradient width")
+    return min((1 << (pixel_width + 3)) - 1, abs(gx) + abs(gy))
+
+
+class GradientMagnitude:
+    """Cycle-accurate model of the registered gradient magnitude stage."""
+
+    def __init__(self, pixel_width: int = 8) -> None:
+        self.pixel_width = pixel_width
+        self.reset()
+
+    def reset(self) -> None:
+        self.m_valid = False
+        self.m_magnitude = 0
+
+    def step(self, s_valid: bool, gx: int, gy: int, m_ready: bool) -> tuple[bool, bool, int]:
+        if not isinstance(s_valid, bool) or not isinstance(m_ready, bool):
+            raise TypeError("valid and ready signals must be booleans")
+        magnitude = gradient_magnitude(gx, gy, self.pixel_width)
+        s_ready = not self.m_valid or m_ready
+        outputs = (s_ready, self.m_valid, self.m_magnitude)
+        if s_ready:
+            self.m_valid = s_valid
+            if s_valid:
+                self.m_magnitude = magnitude
+        return outputs

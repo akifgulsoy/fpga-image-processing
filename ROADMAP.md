@@ -16,7 +16,7 @@ reference model, self-checking tests, and concise documentation.
 - [x] Parameterized three-line buffer
 - [x] 3x3 convolution window generator
 - [x] Sobel X/Y kernels
-- [ ] Gradient magnitude approximation
+- [x] Gradient magnitude approximation
 
 ## Milestone 3 — Frame-aware streaming
 

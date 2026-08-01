@@ -32,6 +32,7 @@ try {
         @{ Name = "three_line_buffer"; Rtl = "rtl/three_line_buffer.sv"; Tb = "tb/tb_three_line_buffer.sv" },
         @{ Name = "convolution_window_3x3"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_3x3.sv" },
         @{ Name = "sobel_xy"; Rtl = "rtl/sobel_xy.sv"; Tb = "tb/tb_sobel_xy.sv" }
+        @{ Name = "gradient_magnitude"; Rtl = "rtl/gradient_magnitude.sv"; Tb = "tb/tb_gradient_magnitude.sv" }
     )
     foreach ($Testbench in $Testbenches) {
         & $Iverilog.Source -g2012 -Wall -o "build/$($Testbench.Name).vvp" `

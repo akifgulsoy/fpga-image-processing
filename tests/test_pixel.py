@@ -2,10 +2,12 @@ import unittest
 
 from model import (
     ConvolutionWindow3x3,
+    GradientMagnitude,
     PixelStreamRegisterSlice,
     SobelXy,
     ThreeLineBuffer,
     brightness_contrast,
+    gradient_magnitude,
     rgb_to_grayscale,
     sobel_xy,
     threshold_to_mask,
@@ -189,6 +191,28 @@ class SobelXyTests(unittest.TestCase):
     def test_rejects_invalid_window(self) -> None:
         with self.assertRaises(ValueError): sobel_xy((0,) * 8)
         with self.assertRaises(ValueError): sobel_xy((0,) * 8 + (256,))
+
+
+class GradientMagnitudeTests(unittest.TestCase):
+    def test_calculates_l1_gradient_magnitude(self) -> None:
+        self.assertEqual(gradient_magnitude(1020, 0), 1020)
+        self.assertEqual(gradient_magnitude(-300, 200), 500)
+        self.assertEqual(gradient_magnitude(-1020, 510), 1530)
+
+    def test_saturates_full_width_inputs(self) -> None:
+        self.assertEqual(gradient_magnitude(-1024, -1024), 2047)
+
+    def test_holds_magnitude_during_backpressure(self) -> None:
+        dut = GradientMagnitude()
+        dut.step(True, -1020, 510, False)
+        self.assertEqual(dut.step(False, 0, 0, False), (False, True, 1530))
+        self.assertEqual(dut.step(True, 0, 0, False), (False, True, 1530))
+
+    def test_rejects_invalid_gradients(self) -> None:
+        with self.assertRaises(ValueError):
+            gradient_magnitude(-1025, 0)
+        with self.assertRaises(TypeError):
+            gradient_magnitude(True, 0)
 
 
 if __name__ == "__main__":
