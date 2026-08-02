@@ -50,6 +50,13 @@ holds the registered payload stable while downstream `ready` is low.
 
 ## Three-line buffer
 
+## Start/end-of-line metadata
+
+`pixel_stream_line_metadata` is a one-entry stream boundary for a pixel and
+its line markers. `SOL` marks the first pixel of a line and `EOL` its last;
+the module transfers both flags with the pixel and holds all three outputs
+stable whenever downstream backpressure is asserted.
+
 `three_line_buffer` stores two prior raster rows for a fixed `LINE_PIXELS`
 width. On each accepted input pixel, it emits that pixel and the two stored
 pixels at the current column, then updates both history rows and advances the

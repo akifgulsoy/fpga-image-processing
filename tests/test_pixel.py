@@ -3,6 +3,7 @@ import unittest
 from model import (
     ConvolutionWindow3x3,
     GradientMagnitude,
+    PixelStreamLineMetadata,
     PixelStreamRegisterSlice,
     SobelXy,
     ThreeLineBuffer,
@@ -105,6 +106,30 @@ class PixelStreamRegisterSliceTests(unittest.TestCase):
             dut.step(True, 16, True)
         with self.assertRaises(TypeError):
             dut.step(1, 0, True)
+
+
+class PixelStreamLineMetadataTests(unittest.TestCase):
+    def test_transfers_pixel_and_line_markers_together(self) -> None:
+        dut = PixelStreamLineMetadata()
+        self.assertEqual(dut.step(True, 10, True, False, True), (True, False, 0, False, False))
+        self.assertEqual(dut.step(True, 11, False, False, True), (True, True, 10, True, False))
+        self.assertEqual(dut.step(True, 12, False, True, True), (True, True, 11, False, False))
+        self.assertEqual(dut.step(False, 0, False, False, True), (True, True, 12, False, True))
+
+    def test_holds_pixel_and_markers_during_backpressure(self) -> None:
+        dut = PixelStreamLineMetadata()
+        dut.step(True, 91, True, True, False)
+        self.assertEqual(dut.step(False, 0, False, False, False), (False, True, 91, True, True))
+        self.assertEqual(dut.step(True, 12, False, False, False), (False, True, 91, True, True))
+
+    def test_validates_width_and_marker_types(self) -> None:
+        with self.assertRaises(ValueError):
+            PixelStreamLineMetadata(0)
+        dut = PixelStreamLineMetadata(4)
+        with self.assertRaises(ValueError):
+            dut.step(True, 16, False, False, True)
+        with self.assertRaises(TypeError):
+            dut.step(True, 0, 1, False, True)
 
 
 class ThreeLineBufferTests(unittest.TestCase):

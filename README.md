@@ -30,6 +30,10 @@ fixed point (256 is unity); results saturate to the 0--255 range.
 for inserting a registered boundary between compatible pixel-stream stages.
 It preserves payload and valid while downstream backpressure is asserted.
 
+`pixel_stream_line_metadata` carries a pixel with start-of-line (SOL) and
+end-of-line (EOL) flags through a one-entry ready/valid boundary. The metadata
+remains aligned with its pixel, including during downstream stalls.
+
 `three_line_buffer` accepts a fixed-width raster stream and outputs each
 current pixel together with pixels from the same column in the prior two rows.
 The first two rows use zero-filled history after reset.

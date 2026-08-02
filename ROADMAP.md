@@ -20,7 +20,7 @@ reference model, self-checking tests, and concise documentation.
 
 ## Milestone 3 — Frame-aware streaming
 
-- [ ] Start/end-of-line metadata
+- [x] Start/end-of-line metadata
 - [ ] Configurable frame dimensions
 - [ ] Border policies
 - [ ] AXI4-Stream video adapter
