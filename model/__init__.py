@@ -3,6 +3,7 @@
 from .pixel import (
     ConvolutionWindow3x3,
     GradientMagnitude,
+    PixelStreamFrameMetadata,
     PixelStreamLineMetadata,
     PixelStreamRegisterSlice,
     SobelXy,
@@ -17,6 +18,7 @@ from .pixel import (
 __all__ = [
     "ConvolutionWindow3x3",
     "GradientMagnitude",
+    "PixelStreamFrameMetadata",
     "PixelStreamLineMetadata",
     "PixelStreamRegisterSlice",
     "SobelXy",

@@ -57,6 +57,14 @@ its line markers. `SOL` marks the first pixel of a line and `EOL` its last;
 the module transfers both flags with the pixel and holds all three outputs
 stable whenever downstream backpressure is asserted.
 
+## Configurable frame dimensions
+
+`pixel_stream_frame_metadata` derives raster metadata from `LINE_PIXELS` and
+`FRAME_LINES` parameters. It emits `SOL` and `EOL` at the configured column
+bounds and `SOF` and `EOF` at the first and last pixels of the configured
+frame. Column and line counters advance only when an input transfer is
+accepted, so all markers and their pixel remain stable during backpressure.
+
 `three_line_buffer` stores two prior raster rows for a fixed `LINE_PIXELS`
 width. On each accepted input pixel, it emits that pixel and the two stored
 pixels at the current column, then updates both history rows and advances the

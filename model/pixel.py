@@ -117,6 +117,52 @@ class PixelStreamLineMetadata:
         return outputs
 
 
+class PixelStreamFrameMetadata:
+    """Cycle-accurate raster marker generator for configured frame dimensions."""
+
+    def __init__(self, pixel_width: int = 8, line_pixels: int = 640, frame_lines: int = 480) -> None:
+        if any(not isinstance(value, int) or isinstance(value, bool)
+               for value in (pixel_width, line_pixels, frame_lines)):
+            raise TypeError("pixel_width, line_pixels, and frame_lines must be integers")
+        if pixel_width <= 0 or line_pixels <= 0 or frame_lines <= 0:
+            raise ValueError("pixel_width, line_pixels, and frame_lines must be positive")
+        self.pixel_width = pixel_width
+        self.line_pixels = line_pixels
+        self.frame_lines = frame_lines
+        self.reset()
+
+    def reset(self) -> None:
+        self.column = self.line = 0
+        self.m_valid = False
+        self.m_pixel = 0
+        self.m_sol = self.m_eol = self.m_sof = self.m_eof = False
+
+    def step(self, s_valid: bool, s_pixel: int, m_ready: bool) -> tuple[bool, bool, int, bool, bool, bool, bool]:
+        if not isinstance(s_valid, bool) or not isinstance(m_ready, bool):
+            raise TypeError("valid and ready signals must be booleans")
+        if not isinstance(s_pixel, int) or isinstance(s_pixel, bool):
+            raise TypeError("s_pixel must be an integer")
+        if not 0 <= s_pixel < (1 << self.pixel_width):
+            raise ValueError("s_pixel does not fit pixel_width")
+        s_ready = not self.m_valid or m_ready
+        outputs = (s_ready, self.m_valid, self.m_pixel, self.m_sol, self.m_eol,
+                   self.m_sof, self.m_eof)
+        if s_ready:
+            self.m_valid = s_valid
+            if s_valid:
+                self.m_pixel = s_pixel
+                self.m_sol = self.column == 0
+                self.m_eol = self.column == self.line_pixels - 1
+                self.m_sof = self.m_sol and self.line == 0
+                self.m_eof = self.m_eol and self.line == self.frame_lines - 1
+                if self.m_eol:
+                    self.column = 0
+                    self.line = (self.line + 1) % self.frame_lines
+                else:
+                    self.column += 1
+        return outputs
+
+
 class ThreeLineBuffer:
     """Cycle-accurate model of a current-plus-two-prior-line buffer."""
 

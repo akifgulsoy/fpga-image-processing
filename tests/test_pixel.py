@@ -3,6 +3,7 @@ import unittest
 from model import (
     ConvolutionWindow3x3,
     GradientMagnitude,
+    PixelStreamFrameMetadata,
     PixelStreamLineMetadata,
     PixelStreamRegisterSlice,
     SobelXy,
@@ -130,6 +131,38 @@ class PixelStreamLineMetadataTests(unittest.TestCase):
             dut.step(True, 16, False, False, True)
         with self.assertRaises(TypeError):
             dut.step(True, 0, 1, False, True)
+
+
+class PixelStreamFrameMetadataTests(unittest.TestCase):
+    def test_generates_markers_for_configured_raster(self) -> None:
+        dut = PixelStreamFrameMetadata(line_pixels=2, frame_lines=2)
+        expected = [
+            (True, False, 0, False, False, False, False),
+            (True, True, 10, True, False, True, False),
+            (True, True, 11, False, True, False, False),
+            (True, True, 12, True, False, False, False),
+            (True, True, 13, False, True, False, True),
+            (True, True, 14, True, False, True, False),
+        ]
+        inputs = [10, 11, 12, 13, 14]
+        for pixel, output in zip(inputs, expected):
+            self.assertEqual(dut.step(True, pixel, True), output)
+        self.assertEqual(dut.step(False, 0, True), expected[-1])
+
+    def test_holds_frame_metadata_during_backpressure(self) -> None:
+        dut = PixelStreamFrameMetadata(line_pixels=1, frame_lines=1)
+        dut.step(True, 91, False)
+        self.assertEqual(dut.step(False, 0, False), (False, True, 91, True, True, True, True))
+        self.assertEqual(dut.step(True, 12, False), (False, True, 91, True, True, True, True))
+
+    def test_validates_parameters_and_input_width(self) -> None:
+        with self.assertRaises(ValueError):
+            PixelStreamFrameMetadata(frame_lines=0)
+        dut = PixelStreamFrameMetadata(pixel_width=4)
+        with self.assertRaises(ValueError):
+            dut.step(True, 16, True)
+        with self.assertRaises(TypeError):
+            dut.step(1, 0, True)
 
 
 class ThreeLineBufferTests(unittest.TestCase):

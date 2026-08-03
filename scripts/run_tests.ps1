@@ -33,6 +33,7 @@ try {
         @{ Name = "convolution_window_3x3"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_3x3.sv" },
         @{ Name = "sobel_xy"; Rtl = "rtl/sobel_xy.sv"; Tb = "tb/tb_sobel_xy.sv" },
         @{ Name = "pixel_stream_line_metadata"; Rtl = "rtl/pixel_stream_line_metadata.sv"; Tb = "tb/tb_pixel_stream_line_metadata.sv" },
+        @{ Name = "pixel_stream_frame_metadata"; Rtl = "rtl/pixel_stream_frame_metadata.sv"; Tb = "tb/tb_pixel_stream_frame_metadata.sv" },
         @{ Name = "gradient_magnitude"; Rtl = "rtl/gradient_magnitude.sv"; Tb = "tb/tb_gradient_magnitude.sv" }
     )
     foreach ($Testbench in $Testbenches) {

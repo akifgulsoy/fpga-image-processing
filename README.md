@@ -34,6 +34,10 @@ It preserves payload and valid while downstream backpressure is asserted.
 end-of-line (EOL) flags through a one-entry ready/valid boundary. The metadata
 remains aligned with its pixel, including during downstream stalls.
 
+`pixel_stream_frame_metadata` generates SOL/EOL and start/end-of-frame (SOF/EOF)
+markers from configurable line and frame dimensions while preserving the
+ready/valid stream contract.
+
 `three_line_buffer` accepts a fixed-width raster stream and outputs each
 current pixel together with pixels from the same column in the prior two rows.
 The first two rows use zero-filled history after reset.
