@@ -17,7 +17,8 @@ module tb_convolution_window_3x3;
 
     convolution_window_3x3 #(
         .PIXEL_WIDTH(8),
-        .LINE_PIXELS(3)
+        .LINE_PIXELS(3),
+        .REPLICATE_LEFT_BORDER(1'b1)
     ) dut (
         .clk_i, .rst_ni, .s_valid_i, .s_ready_o, .s_pixel_i,
         .m_valid_o, .m_ready_i,
@@ -52,13 +53,13 @@ module tb_convolution_window_3x3;
         repeat (3) @(posedge clk_i);
         rst_ni = 1'b1;
 
-        send_and_check(8'd10, 0, 0, 0, 0, 0, 0, 0, 0, 10);
+        send_and_check(8'd10, 0, 0, 0, 0, 0, 0, 10, 10, 10);
         send_and_check(8'd11, 0, 0, 0, 0, 0, 0, 0, 10, 11);
         send_and_check(8'd12, 0, 0, 0, 0, 0, 0, 10, 11, 12);
-        send_and_check(8'd20, 0, 0, 0, 0, 0, 10, 0, 0, 20);
+        send_and_check(8'd20, 0, 0, 0, 10, 10, 10, 20, 20, 20);
         send_and_check(8'd21, 0, 0, 0, 0, 10, 11, 0, 20, 21);
         send_and_check(8'd22, 0, 0, 0, 10, 11, 12, 20, 21, 22);
-        send_and_check(8'd30, 0, 0, 10, 0, 0, 20, 0, 0, 30);
+        send_and_check(8'd30, 10, 10, 10, 20, 20, 20, 30, 30, 30);
         send_and_check(8'd31, 0, 10, 11, 0, 20, 21, 0, 30, 31);
         send_and_check(8'd32, 10, 11, 12, 20, 21, 22, 30, 31, 32);
 
@@ -70,9 +71,9 @@ module tb_convolution_window_3x3;
         s_valid_i = 1'b0;
         repeat (3) begin
             @(negedge clk_i);
-            if (!m_valid_o || m_top_left_o !== 0 || m_top_mid_o !== 0 ||
-                m_top_right_o !== 20 || m_mid_left_o !== 0 || m_mid_mid_o !== 0 ||
-                m_mid_right_o !== 30 || m_bot_left_o !== 0 || m_bot_mid_o !== 0 ||
+            if (!m_valid_o || m_top_left_o !== 20 || m_top_mid_o !== 20 ||
+                m_top_right_o !== 20 || m_mid_left_o !== 30 || m_mid_mid_o !== 30 ||
+                m_mid_right_o !== 30 || m_bot_left_o !== 40 || m_bot_mid_o !== 40 ||
                 m_bot_right_o !== 40 || s_ready_o) begin
                 $fatal(1, "Window or ready changed while downstream was stalled");
             end

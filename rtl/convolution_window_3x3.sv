@@ -1,6 +1,7 @@
 module convolution_window_3x3 #(
     parameter int unsigned PIXEL_WIDTH = 8,
-    parameter int unsigned LINE_PIXELS = 640
+    parameter int unsigned LINE_PIXELS = 640,
+    parameter bit REPLICATE_LEFT_BORDER = 1'b0
 ) (
     input  logic                   clk_i,
     input  logic                   rst_ni,
@@ -66,14 +67,23 @@ module convolution_window_3x3 #(
         end else if (s_ready_o) begin
             m_valid_o <= s_valid_i;
             if (s_valid_i) begin
-                m_top_left_o  <= top_left_q;
-                m_top_mid_o   <= top_mid_q;
+                if ((column_q == '0) && REPLICATE_LEFT_BORDER) begin
+                    m_top_left_o <= line2_mem[column_q];
+                    m_top_mid_o  <= line2_mem[column_q];
+                    m_mid_left_o <= line1_mem[column_q];
+                    m_mid_mid_o  <= line1_mem[column_q];
+                    m_bot_left_o <= s_pixel_i;
+                    m_bot_mid_o  <= s_pixel_i;
+                end else begin
+                    m_top_left_o <= top_left_q;
+                    m_top_mid_o  <= top_mid_q;
+                    m_mid_left_o <= mid_left_q;
+                    m_mid_mid_o  <= mid_mid_q;
+                    m_bot_left_o <= bot_left_q;
+                    m_bot_mid_o  <= bot_mid_q;
+                end
                 m_top_right_o <= line2_mem[column_q];
-                m_mid_left_o  <= mid_left_q;
-                m_mid_mid_o   <= mid_mid_q;
                 m_mid_right_o <= line1_mem[column_q];
-                m_bot_left_o  <= bot_left_q;
-                m_bot_mid_o   <= bot_mid_q;
                 m_bot_right_o <= s_pixel_i;
 
                 top_left_q <= top_mid_q;

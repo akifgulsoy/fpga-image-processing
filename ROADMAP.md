@@ -22,7 +22,8 @@ reference model, self-checking tests, and concise documentation.
 
 - [x] Start/end-of-line metadata
 - [x] Configurable frame dimensions
-- [ ] Border policies
+- [x] Configurable left-edge zero/replicate border policy
+- [ ] Remaining border policies
 - [ ] AXI4-Stream video adapter
 
 ## Milestone 4 — Integration
