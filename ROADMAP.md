@@ -23,6 +23,7 @@ reference model, self-checking tests, and concise documentation.
 - [x] Start/end-of-line metadata
 - [x] Configurable frame dimensions
 - [x] Configurable left-edge zero/replicate border policy
+- [x] Configurable top-edge zero/replicate border policy
 - [ ] Remaining border policies
 - [ ] AXI4-Stream video adapter
 

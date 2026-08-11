@@ -223,10 +223,11 @@ class ThreeLineBuffer:
 
 
 class ConvolutionWindow3x3:
-    """Cycle-accurate model of a 3x3 raster window with a left border policy."""
+    """Cycle-accurate model of a 3x3 raster window with border policies."""
 
     def __init__(self, pixel_width: int = 8, line_pixels: int = 640,
-                 replicate_left_border: bool = False) -> None:
+                 replicate_left_border: bool = False,
+                 replicate_top_border: bool = False) -> None:
         if not isinstance(pixel_width, int) or isinstance(pixel_width, bool):
             raise TypeError("pixel_width must be an integer")
         if not isinstance(line_pixels, int) or isinstance(line_pixels, bool):
@@ -237,15 +238,19 @@ class ConvolutionWindow3x3:
             raise ValueError("line_pixels must be positive")
         if not isinstance(replicate_left_border, bool):
             raise TypeError("replicate_left_border must be a boolean")
+        if not isinstance(replicate_top_border, bool):
+            raise TypeError("replicate_top_border must be a boolean")
         self.pixel_width = pixel_width
         self.line_pixels = line_pixels
         self.replicate_left_border = replicate_left_border
+        self.replicate_top_border = replicate_top_border
         self.reset()
 
     def reset(self) -> None:
         """Apply the RTL reset state, clearing history and left borders."""
 
         self.column = 0
+        self.row_count = 0
         self.line1 = [0] * self.line_pixels
         self.line2 = [0] * self.line_pixels
         self.top_left = self.top_mid = 0
@@ -273,7 +278,29 @@ class ConvolutionWindow3x3:
             if s_valid:
                 top_right = self.line2[self.column]
                 mid_right = self.line1[self.column]
-                if self.column == 0 and self.replicate_left_border:
+                if self.replicate_top_border and self.row_count == 0:
+                    if self.column == 0 and self.replicate_left_border:
+                        self.window = (s_pixel,) * 9
+                    else:
+                        self.window = (
+                            self.bot_left, self.bot_mid, s_pixel,
+                            self.bot_left, self.bot_mid, s_pixel,
+                            self.bot_left, self.bot_mid, s_pixel,
+                        )
+                elif self.replicate_top_border and self.row_count == 1:
+                    if self.column == 0 and self.replicate_left_border:
+                        self.window = (
+                            mid_right, mid_right, mid_right,
+                            mid_right, mid_right, mid_right,
+                            s_pixel, s_pixel, s_pixel,
+                        )
+                    else:
+                        self.window = (
+                            self.mid_left, self.mid_mid, mid_right,
+                            self.mid_left, self.mid_mid, mid_right,
+                            self.bot_left, self.bot_mid, s_pixel,
+                        )
+                elif self.column == 0 and self.replicate_left_border:
                     self.window = (
                         top_right, top_right, top_right,
                         mid_right, mid_right, mid_right,
@@ -289,6 +316,7 @@ class ConvolutionWindow3x3:
                 self.line1[self.column] = s_pixel
                 if self.column == self.line_pixels - 1:
                     self.column = 0
+                    self.row_count = min(self.row_count + 1, 2)
                     self.top_left = self.top_mid = 0
                     self.mid_left = self.mid_mid = 0
                     self.bot_left = self.bot_mid = 0

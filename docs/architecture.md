@@ -79,9 +79,11 @@ registers. Each accepted pixel produces a registered window whose bottom-right
 entry is the current pixel; its top and middle rows are the corresponding
 pixels from the two prior rows. The first two raster rows and the leftmost
 column are zero-filled by default. Setting `REPLICATE_LEFT_BORDER` makes the
-leftmost output column repeat each available row's first pixel instead; missing
-prior rows remain zero-filled. Horizontal state resets at each fixed-width line
-boundary, and all state advances only on a ready/valid input transfer.
+leftmost output column repeat each available row's first pixel instead.
+`REPLICATE_TOP_BORDER` fills missing prior rows with the nearest available top
+row; both policies can be enabled together. Horizontal state resets at each
+fixed-width line boundary, and all state advances only on a ready/valid input
+transfer.
 
 ## Sobel X/Y kernels
 

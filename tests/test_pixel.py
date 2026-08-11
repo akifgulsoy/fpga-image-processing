@@ -230,6 +230,22 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
             dut.step(True, pixel, True)
             self.assertEqual(dut.step(False, 0, True), (True, True, window))
 
+    def test_replicates_available_pixels_at_top_border_when_enabled(self) -> None:
+        dut = ConvolutionWindow3x3(line_pixels=3, replicate_top_border=True)
+        samples = [10, 11, 12, 20, 21, 22, 30]
+        expected = [
+            (0, 0, 10, 0, 0, 10, 0, 0, 10),
+            (0, 10, 11, 0, 10, 11, 0, 10, 11),
+            (10, 11, 12, 10, 11, 12, 10, 11, 12),
+            (0, 0, 10, 0, 0, 10, 0, 0, 20),
+            (0, 10, 11, 0, 10, 11, 0, 20, 21),
+            (10, 11, 12, 10, 11, 12, 20, 21, 22),
+            (0, 0, 10, 0, 0, 20, 0, 0, 30),
+        ]
+        for pixel, window in zip(samples, expected):
+            dut.step(True, pixel, True)
+            self.assertEqual(dut.step(False, 0, True), (True, True, window))
+
     def test_holds_window_during_backpressure(self) -> None:
         dut = ConvolutionWindow3x3(line_pixels=2)
         dut.step(True, 7, False)
@@ -250,6 +266,8 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
             dut.step(True, False, True)
         with self.assertRaises(TypeError):
             ConvolutionWindow3x3(replicate_left_border=1)
+        with self.assertRaises(TypeError):
+            ConvolutionWindow3x3(replicate_top_border=1)
 
 
 class SobelXyTests(unittest.TestCase):
