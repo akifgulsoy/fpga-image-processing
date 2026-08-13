@@ -51,7 +51,9 @@ module tb_convolution_window_3x3;
     endtask
 
     initial begin
-        repeat (3) @(posedge clk_i);
+        // Deassert reset away from the DUT's active clock edge so the first
+        // transfer has a deterministic reset state in all simulators.
+        repeat (3) @(negedge clk_i);
         rst_ni = 1'b1;
 
         send_and_check(8'd10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
