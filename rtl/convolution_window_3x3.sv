@@ -86,9 +86,6 @@ module convolution_window_3x3 #(
                         m_bot_left_o <= bot_left_q;
                         m_bot_mid_o  <= bot_mid_q;
                     end
-                    m_top_right_o <= s_pixel_i;
-                    m_mid_right_o <= s_pixel_i;
-                    m_bot_right_o <= s_pixel_i;
                 end else if (REPLICATE_TOP_BORDER && (row_count_q == 2'd1)) begin
                     if ((column_q == '0) && REPLICATE_LEFT_BORDER) begin
                         m_top_left_o <= line1_mem[column_q];
@@ -105,9 +102,6 @@ module convolution_window_3x3 #(
                         m_bot_left_o <= bot_left_q;
                         m_bot_mid_o  <= bot_mid_q;
                     end
-                    m_top_right_o <= line1_mem[column_q];
-                    m_mid_right_o <= line1_mem[column_q];
-                    m_bot_right_o <= s_pixel_i;
                 end else if ((column_q == '0) && REPLICATE_LEFT_BORDER) begin
                     m_top_left_o <= line2_mem[column_q];
                     m_top_mid_o  <= line2_mem[column_q];
@@ -123,16 +117,35 @@ module convolution_window_3x3 #(
                     m_bot_left_o <= bot_left_q;
                     m_bot_mid_o  <= bot_mid_q;
                 end
-                m_top_right_o <= line2_mem[column_q];
-                m_mid_right_o <= line1_mem[column_q];
-                m_bot_right_o <= s_pixel_i;
+                if (REPLICATE_TOP_BORDER && (row_count_q == 2'd0)) begin
+                    m_top_right_o <= s_pixel_i;
+                    m_mid_right_o <= s_pixel_i;
+                    m_bot_right_o <= s_pixel_i;
+                end else if (REPLICATE_TOP_BORDER && (row_count_q == 2'd1)) begin
+                    m_top_right_o <= line1_mem[column_q];
+                    m_mid_right_o <= line1_mem[column_q];
+                    m_bot_right_o <= s_pixel_i;
+                end else begin
+                    m_top_right_o <= line2_mem[column_q];
+                    m_mid_right_o <= line1_mem[column_q];
+                    m_bot_right_o <= s_pixel_i;
+                end
 
-                top_left_q <= top_mid_q;
-                top_mid_q  <= line2_mem[column_q];
-                mid_left_q <= mid_mid_q;
-                mid_mid_q  <= line1_mem[column_q];
-                bot_left_q <= bot_mid_q;
-                bot_mid_q  <= s_pixel_i;
+                if ((column_q == '0) && REPLICATE_LEFT_BORDER) begin
+                    top_left_q <= line2_mem[column_q];
+                    top_mid_q  <= line2_mem[column_q];
+                    mid_left_q <= line1_mem[column_q];
+                    mid_mid_q  <= line1_mem[column_q];
+                    bot_left_q <= s_pixel_i;
+                    bot_mid_q  <= s_pixel_i;
+                end else begin
+                    top_left_q <= top_mid_q;
+                    top_mid_q  <= line2_mem[column_q];
+                    mid_left_q <= mid_mid_q;
+                    mid_mid_q  <= line1_mem[column_q];
+                    bot_left_q <= bot_mid_q;
+                    bot_mid_q  <= s_pixel_i;
+                end
                 line2_mem[column_q] <= line1_mem[column_q];
                 line1_mem[column_q] <= s_pixel_i;
 

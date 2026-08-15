@@ -45,7 +45,7 @@ The first two rows use zero-filled history after reset.
 `convolution_window_3x3` turns the current pixel and the two prior raster rows
 into a 3x3 window suitable for streaming convolution kernels. Its default
 zero-filled borders can optionally replicate the available left-edge pixel
-and/or top-row pixels.
+into the window's left column and/or the available top-row pixels.
 
 `sobel_xy` applies signed Sobel X and Y kernels to a 3x3 grayscale window.
 For 8-bit input pixels, each result is an 11-bit signed gradient.

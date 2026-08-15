@@ -219,10 +219,10 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
         samples = [10, 11, 12, 20, 21, 22, 30]
         expected = [
             (0, 0, 0, 0, 0, 0, 10, 10, 10),
-            (0, 0, 0, 0, 0, 0, 0, 10, 11),
+            (0, 0, 0, 0, 0, 0, 10, 10, 11),
             (0, 0, 0, 0, 0, 0, 10, 11, 12),
             (0, 0, 0, 10, 10, 10, 20, 20, 20),
-            (0, 0, 0, 0, 10, 11, 0, 20, 21),
+            (0, 0, 0, 10, 10, 11, 20, 20, 21),
             (0, 0, 0, 10, 11, 12, 20, 21, 22),
             (10, 10, 10, 20, 20, 20, 30, 30, 30),
         ]
@@ -241,6 +241,26 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
             (0, 10, 11, 0, 10, 11, 0, 20, 21),
             (10, 11, 12, 10, 11, 12, 20, 21, 22),
             (0, 0, 10, 0, 0, 20, 0, 0, 30),
+        ]
+        for pixel, window in zip(samples, expected):
+            dut.step(True, pixel, True)
+            self.assertEqual(dut.step(False, 0, True), (True, True, window))
+
+    def test_combines_left_and_top_border_replication(self) -> None:
+        dut = ConvolutionWindow3x3(
+            line_pixels=3, replicate_left_border=True, replicate_top_border=True
+        )
+        samples = [10, 11, 12, 20, 21, 22, 30, 31, 32]
+        expected = [
+            (10, 10, 10, 10, 10, 10, 10, 10, 10),
+            (10, 10, 11, 10, 10, 11, 10, 10, 11),
+            (10, 11, 12, 10, 11, 12, 10, 11, 12),
+            (10, 10, 10, 10, 10, 10, 20, 20, 20),
+            (10, 10, 11, 10, 10, 11, 20, 20, 21),
+            (10, 11, 12, 10, 11, 12, 20, 21, 22),
+            (10, 10, 10, 20, 20, 20, 30, 30, 30),
+            (10, 10, 11, 20, 20, 21, 30, 30, 31),
+            (10, 11, 12, 20, 21, 22, 30, 31, 32),
         ]
         for pixel, window in zip(samples, expected):
             dut.step(True, pixel, True)

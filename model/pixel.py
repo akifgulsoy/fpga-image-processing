@@ -322,9 +322,14 @@ class ConvolutionWindow3x3:
                     self.bot_left = self.bot_mid = 0
                 else:
                     self.column += 1
-                    self.top_left, self.top_mid = self.top_mid, top_right
-                    self.mid_left, self.mid_mid = self.mid_mid, mid_right
-                    self.bot_left, self.bot_mid = self.bot_mid, s_pixel
+                    if self.column == 1 and self.replicate_left_border:
+                        self.top_left = self.top_mid = top_right
+                        self.mid_left = self.mid_mid = mid_right
+                        self.bot_left = self.bot_mid = s_pixel
+                    else:
+                        self.top_left, self.top_mid = self.top_mid, top_right
+                        self.mid_left, self.mid_mid = self.mid_mid, mid_right
+                        self.bot_left, self.bot_mid = self.bot_mid, s_pixel
         return outputs
 
 

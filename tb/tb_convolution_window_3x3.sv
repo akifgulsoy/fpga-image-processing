@@ -60,10 +60,10 @@ module tb_convolution_window_3x3;
         send_and_check(8'd11, 10, 10, 11, 10, 10, 11, 10, 10, 11);
         send_and_check(8'd12, 10, 11, 12, 10, 11, 12, 10, 11, 12);
         send_and_check(8'd20, 10, 10, 10, 10, 10, 10, 20, 20, 20);
-        send_and_check(8'd21, 10, 10, 11, 10, 10, 11, 0, 20, 21);
+        send_and_check(8'd21, 10, 10, 11, 10, 10, 11, 20, 20, 21);
         send_and_check(8'd22, 10, 11, 12, 10, 11, 12, 20, 21, 22);
         send_and_check(8'd30, 10, 10, 10, 20, 20, 20, 30, 30, 30);
-        send_and_check(8'd31, 0, 10, 11, 0, 20, 21, 0, 30, 31);
+        send_and_check(8'd31, 10, 10, 11, 20, 20, 21, 30, 30, 31);
         send_and_check(8'd32, 10, 11, 12, 20, 21, 22, 30, 31, 32);
 
         @(negedge clk_i);
