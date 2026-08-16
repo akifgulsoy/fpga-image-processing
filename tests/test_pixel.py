@@ -266,6 +266,31 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
             dut.step(True, pixel, True)
             self.assertEqual(dut.step(False, 0, True), (True, True, window))
 
+    def test_supports_single_pixel_lines(self) -> None:
+        samples = [10, 20, 30]
+        zero_filled = [
+            (0, 0, 0, 0, 0, 0, 0, 0, 10),
+            (0, 0, 0, 0, 0, 10, 0, 0, 20),
+            (0, 0, 10, 0, 0, 20, 0, 0, 30),
+        ]
+        replicated = [
+            (10, 10, 10, 10, 10, 10, 10, 10, 10),
+            (10, 10, 10, 10, 10, 10, 20, 20, 20),
+            (10, 10, 10, 20, 20, 20, 30, 30, 30),
+        ]
+
+        for dut, expected in (
+            (ConvolutionWindow3x3(line_pixels=1), zero_filled),
+            (ConvolutionWindow3x3(
+                line_pixels=1,
+                replicate_left_border=True,
+                replicate_top_border=True,
+            ), replicated),
+        ):
+            for pixel, window in zip(samples, expected):
+                dut.step(True, pixel, True)
+                self.assertEqual(dut.step(False, 0, True), (True, True, window))
+
     def test_holds_window_during_backpressure(self) -> None:
         dut = ConvolutionWindow3x3(line_pixels=2)
         dut.step(True, 7, False)
