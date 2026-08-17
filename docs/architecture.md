@@ -65,6 +65,14 @@ bounds and `SOF` and `EOF` at the first and last pixels of the configured
 frame. Column and line counters advance only when an input transfer is
 accepted, so all markers and their pixel remain stable during backpressure.
 
+## AXI4-Stream video adapter
+
+`axi4s_video_adapter` converts an AXI4-Stream video input into the project's
+pixel stream. It transfers `TDATA` as the pixel, maps `TUSER[0]` to SOF and
+`TLAST` to EOL, and uses a one-entry registered boundary. The AXI input is
+ready when the boundary is empty or the downstream consumer accepts its output,
+so every payload and marker remains stable during backpressure.
+
 `three_line_buffer` stores two prior raster rows for a fixed `LINE_PIXELS`
 width. On each accepted input pixel, it emits that pixel and the two stored
 pixels at the current column, then updates both history rows and advances the

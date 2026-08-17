@@ -1,6 +1,7 @@
 import unittest
 
 from model import (
+    Axi4sVideoAdapter,
     ConvolutionWindow3x3,
     GradientMagnitude,
     PixelStreamFrameMetadata,
@@ -127,6 +128,29 @@ class PixelStreamLineMetadataTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             PixelStreamLineMetadata(0)
         dut = PixelStreamLineMetadata(4)
+        with self.assertRaises(ValueError):
+            dut.step(True, 16, False, False, True)
+        with self.assertRaises(TypeError):
+            dut.step(True, 0, 1, False, True)
+
+
+class Axi4sVideoAdapterTests(unittest.TestCase):
+    def test_transfers_axi_payload_and_video_markers(self) -> None:
+        dut = Axi4sVideoAdapter()
+        self.assertEqual(dut.step(True, 10, True, False, True), (True, False, 0, False, False))
+        self.assertEqual(dut.step(True, 11, False, True, True), (True, True, 10, True, False))
+        self.assertEqual(dut.step(False, 0, False, False, True), (True, True, 11, False, True))
+
+    def test_holds_axi_payload_and_markers_during_backpressure(self) -> None:
+        dut = Axi4sVideoAdapter()
+        dut.step(True, 91, True, True, False)
+        self.assertEqual(dut.step(False, 0, False, False, False), (False, True, 91, True, True))
+        self.assertEqual(dut.step(True, 12, False, False, False), (False, True, 91, True, True))
+
+    def test_validates_width_and_inputs(self) -> None:
+        with self.assertRaises(ValueError):
+            Axi4sVideoAdapter(0)
+        dut = Axi4sVideoAdapter(4)
         with self.assertRaises(ValueError):
             dut.step(True, 16, False, False, True)
         with self.assertRaises(TypeError):

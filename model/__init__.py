@@ -1,6 +1,7 @@
 """Bit-accurate reference models for the FPGA image pipeline."""
 
 from .pixel import (
+    Axi4sVideoAdapter,
     ConvolutionWindow3x3,
     GradientMagnitude,
     PixelStreamFrameMetadata,
@@ -16,6 +17,7 @@ from .pixel import (
 )
 
 __all__ = [
+    "Axi4sVideoAdapter",
     "ConvolutionWindow3x3",
     "GradientMagnitude",
     "PixelStreamFrameMetadata",

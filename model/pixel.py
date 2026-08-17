@@ -117,6 +117,39 @@ class PixelStreamLineMetadata:
         return outputs
 
 
+class Axi4sVideoAdapter:
+    """Cycle-accurate AXI4-Stream video-input to pixel-stream adapter."""
+
+    def __init__(self, pixel_width: int = 8) -> None:
+        if not isinstance(pixel_width, int) or isinstance(pixel_width, bool):
+            raise TypeError("pixel_width must be an integer")
+        if pixel_width <= 0:
+            raise ValueError("pixel_width must be positive")
+        self.pixel_width = pixel_width
+        self.reset()
+
+    def reset(self) -> None:
+        self.m_valid = False
+        self.m_pixel = 0
+        self.m_sof = self.m_eol = False
+
+    def step(self, s_valid: bool, s_pixel: int, s_sof: bool, s_eol: bool,
+             m_ready: bool) -> tuple[bool, bool, int, bool, bool]:
+        if not all(isinstance(value, bool) for value in (s_valid, s_sof, s_eol, m_ready)):
+            raise TypeError("valid, video markers, and ready signals must be booleans")
+        if not isinstance(s_pixel, int) or isinstance(s_pixel, bool):
+            raise TypeError("s_pixel must be an integer")
+        if not 0 <= s_pixel < (1 << self.pixel_width):
+            raise ValueError("s_pixel does not fit pixel_width")
+        s_ready = not self.m_valid or m_ready
+        outputs = (s_ready, self.m_valid, self.m_pixel, self.m_sof, self.m_eol)
+        if s_ready:
+            self.m_valid = s_valid
+            if s_valid:
+                self.m_pixel, self.m_sof, self.m_eol = s_pixel, s_sof, s_eol
+        return outputs
+
+
 class PixelStreamFrameMetadata:
     """Cycle-accurate raster marker generator for configured frame dimensions."""
 

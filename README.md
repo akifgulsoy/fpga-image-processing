@@ -38,6 +38,9 @@ remains aligned with its pixel, including during downstream stalls.
 markers from configurable line and frame dimensions while preserving the
 ready/valid stream contract.
 
+`axi4s_video_adapter` accepts an AXI4-Stream video input, mapping `TUSER[0]`
+to SOF and `TLAST` to EOL through a registered ready/valid boundary.
+
 `three_line_buffer` accepts a fixed-width raster stream and outputs each
 current pixel together with pixels from the same column in the prior two rows.
 The first two rows use zero-filled history after reset.
