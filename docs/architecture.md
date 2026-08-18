@@ -101,6 +101,13 @@ only on a ready/valid input transfer.
 in signed 11 bits (-1020 through 1020), and the output stays stable while
 downstream backpressure is asserted.
 
+## Grayscale-to-Sobel reference pipeline
+
+The `grayscale_to_sobel` Python reference function composes
+`ConvolutionWindow3x3` with the Sobel arithmetic model for a fixed-width
+raster. It returns one `(Gx, Gy)` pair per input pixel and accepts the same
+left and top border-policy selections as the window model.
+
 ## Gradient magnitude
 
 `gradient_magnitude` calculates the hardware-friendly L1 approximation

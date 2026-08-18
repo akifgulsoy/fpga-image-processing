@@ -29,7 +29,7 @@ reference model, self-checking tests, and concise documentation.
 
 ## Milestone 4 — Integration
 
-- [ ] Grayscale-to-Sobel reference pipeline
+- [x] Grayscale-to-Sobel reference pipeline
 - [ ] Verilator or cocotb regression option
 - [ ] Synthesis smoke test with Yosys
 - [ ] Resource and timing reports for a documented FPGA target

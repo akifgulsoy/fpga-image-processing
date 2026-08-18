@@ -382,6 +382,37 @@ def sobel_xy(window: tuple[int, ...], pixel_width: int = 8) -> tuple[int, int]:
             bl - tl + 2 * (bm - tm) + br - tr)
 
 
+def grayscale_to_sobel(
+    pixels: tuple[int, ...],
+    line_pixels: int,
+    pixel_width: int = 8,
+    replicate_left_border: bool = False,
+    replicate_top_border: bool = False,
+) -> tuple[tuple[int, int], ...]:
+    """Return Sobel gradients for a grayscale raster stream.
+
+    This composes the convolution-window reference model with the Sobel
+    arithmetic model.  One gradient pair is returned for every input pixel,
+    including the configured leading border behavior.
+    """
+
+    if not isinstance(pixels, tuple):
+        raise TypeError("pixels must be a tuple")
+    window_generator = ConvolutionWindow3x3(
+        pixel_width=pixel_width,
+        line_pixels=line_pixels,
+        replicate_left_border=replicate_left_border,
+        replicate_top_border=replicate_top_border,
+    )
+    gradients = []
+    for pixel in pixels:
+        window_generator.step(True, pixel, True)
+        _ready, valid, window = window_generator.step(False, 0, True)
+        assert valid
+        gradients.append(sobel_xy(window, pixel_width))
+    return tuple(gradients)
+
+
 class SobelXy:
     """Cycle-accurate model of the registered Sobel X/Y stage."""
     def __init__(self, pixel_width: int = 8) -> None:

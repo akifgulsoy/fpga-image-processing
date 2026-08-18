@@ -58,6 +58,9 @@ For 8-bit input pixels, each result is an 11-bit signed gradient.
 11-bit unsigned output saturates at 2047 and preserves ready/valid
 backpressure.
 
+The `grayscale_to_sobel` Python reference pipeline composes the raster window
+and Sobel models, returning one signed `(Gx, Gy)` pair per grayscale pixel.
+
 ## Repository layout
 
 ```text

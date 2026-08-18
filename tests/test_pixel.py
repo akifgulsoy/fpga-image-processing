@@ -10,6 +10,7 @@ from model import (
     SobelXy,
     ThreeLineBuffer,
     brightness_contrast,
+    grayscale_to_sobel,
     gradient_magnitude,
     rgb_to_grayscale,
     sobel_xy,
@@ -354,6 +355,29 @@ class SobelXyTests(unittest.TestCase):
     def test_rejects_invalid_window(self) -> None:
         with self.assertRaises(ValueError): sobel_xy((0,) * 8)
         with self.assertRaises(ValueError): sobel_xy((0,) * 8 + (256,))
+
+
+class GrayscaleToSobelPipelineTests(unittest.TestCase):
+    def test_composes_raster_windows_and_sobel_gradients(self) -> None:
+        pixels = (0, 0, 255, 0, 0, 255, 0, 0, 255)
+        gradients = grayscale_to_sobel(pixels, line_pixels=3)
+
+        self.assertEqual(len(gradients), len(pixels))
+        self.assertEqual(gradients[-1], (1020, 0))
+
+    def test_applies_configured_border_policy(self) -> None:
+        self.assertEqual(
+            grayscale_to_sobel(
+                (10,), line_pixels=1,
+                replicate_left_border=True,
+                replicate_top_border=True,
+            ),
+            ((0, 0),),
+        )
+
+    def test_rejects_non_tuple_raster(self) -> None:
+        with self.assertRaises(TypeError):
+            grayscale_to_sobel([0, 1], line_pixels=2)
 
 
 class GradientMagnitudeTests(unittest.TestCase):
