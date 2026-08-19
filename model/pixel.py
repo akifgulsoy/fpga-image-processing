@@ -451,6 +451,31 @@ def gradient_magnitude(gx: int, gy: int, pixel_width: int = 8) -> int:
     return min((1 << (pixel_width + 3)) - 1, abs(gx) + abs(gy))
 
 
+def grayscale_to_edge_magnitude(
+    pixels: tuple[int, ...],
+    line_pixels: int,
+    pixel_width: int = 8,
+    replicate_left_border: bool = False,
+    replicate_top_border: bool = False,
+) -> tuple[int, ...]:
+    """Return saturated L1 Sobel magnitudes for a grayscale raster stream.
+
+    The function composes the grayscale-to-Sobel reference pipeline with the
+    gradient-magnitude arithmetic model, preserving its border-policy options.
+    """
+
+    return tuple(
+        gradient_magnitude(gx, gy, pixel_width)
+        for gx, gy in grayscale_to_sobel(
+            pixels,
+            line_pixels,
+            pixel_width,
+            replicate_left_border,
+            replicate_top_border,
+        )
+    )
+
+
 class GradientMagnitude:
     """Cycle-accurate model of the registered gradient magnitude stage."""
 

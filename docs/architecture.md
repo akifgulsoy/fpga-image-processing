@@ -108,6 +108,10 @@ The `grayscale_to_sobel` Python reference function composes
 raster. It returns one `(Gx, Gy)` pair per input pixel and accepts the same
 left and top border-policy selections as the window model.
 
+`grayscale_to_edge_magnitude` extends the same pipeline through the L1
+gradient-magnitude model, returning one saturated edge-strength value per
+input pixel while preserving those border-policy selections.
+
 ## Gradient magnitude
 
 `gradient_magnitude` calculates the hardware-friendly L1 approximation

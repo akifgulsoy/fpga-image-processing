@@ -10,6 +10,7 @@ from model import (
     SobelXy,
     ThreeLineBuffer,
     brightness_contrast,
+    grayscale_to_edge_magnitude,
     grayscale_to_sobel,
     gradient_magnitude,
     rgb_to_grayscale,
@@ -378,6 +379,35 @@ class GrayscaleToSobelPipelineTests(unittest.TestCase):
     def test_rejects_non_tuple_raster(self) -> None:
         with self.assertRaises(TypeError):
             grayscale_to_sobel([0, 1], line_pixels=2)
+
+
+class GrayscaleToEdgeMagnitudePipelineTests(unittest.TestCase):
+    def test_composes_sobel_gradients_and_l1_magnitude(self) -> None:
+        pixels = (0, 0, 255, 0, 0, 255, 0, 0, 255)
+
+        self.assertEqual(
+            grayscale_to_edge_magnitude(pixels, line_pixels=3),
+            tuple(
+                gradient_magnitude(gx, gy)
+                for gx, gy in grayscale_to_sobel(pixels, line_pixels=3)
+            ),
+        )
+        self.assertEqual(grayscale_to_edge_magnitude(pixels, line_pixels=3)[-1], 1020)
+
+    def test_preserves_configured_border_policy(self) -> None:
+        self.assertEqual(
+            grayscale_to_edge_magnitude(
+                (10,),
+                line_pixels=1,
+                replicate_left_border=True,
+                replicate_top_border=True,
+            ),
+            (0,),
+        )
+
+    def test_rejects_non_tuple_raster(self) -> None:
+        with self.assertRaises(TypeError):
+            grayscale_to_edge_magnitude([0, 1], line_pixels=2)
 
 
 class GradientMagnitudeTests(unittest.TestCase):

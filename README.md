@@ -61,6 +61,10 @@ backpressure.
 The `grayscale_to_sobel` Python reference pipeline composes the raster window
 and Sobel models, returning one signed `(Gx, Gy)` pair per grayscale pixel.
 
+`grayscale_to_edge_magnitude` extends that reference pipeline through the
+saturated L1 gradient-magnitude model, returning one edge-strength value per
+raster pixel with the same border-policy selections.
+
 ## Repository layout
 
 ```text
