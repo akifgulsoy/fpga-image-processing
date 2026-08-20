@@ -36,6 +36,7 @@ try {
         @{ Name = "pixel_stream_line_metadata"; Rtl = "rtl/pixel_stream_line_metadata.sv"; Tb = "tb/tb_pixel_stream_line_metadata.sv" },
         @{ Name = "axi4s_video_adapter"; Rtl = "rtl/axi4s_video_adapter.sv"; Tb = "tb/tb_axi4s_video_adapter.sv" },
         @{ Name = "pixel_stream_frame_metadata"; Rtl = "rtl/pixel_stream_frame_metadata.sv"; Tb = "tb/tb_pixel_stream_frame_metadata.sv" },
+        @{ Name = "pixel_stream_frame_metadata_single_pixel"; Rtl = "rtl/pixel_stream_frame_metadata.sv"; Tb = "tb/tb_pixel_stream_frame_metadata_single_pixel.sv" },
         @{ Name = "gradient_magnitude"; Rtl = "rtl/gradient_magnitude.sv"; Tb = "tb/tb_gradient_magnitude.sv" }
     )
     foreach ($Testbench in $Testbenches) {

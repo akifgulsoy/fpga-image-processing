@@ -181,6 +181,12 @@ class PixelStreamFrameMetadataTests(unittest.TestCase):
         self.assertEqual(dut.step(False, 0, False), (False, True, 91, True, True, True, True))
         self.assertEqual(dut.step(True, 12, False), (False, True, 91, True, True, True, True))
 
+    def test_marks_each_pixel_in_single_pixel_frames(self) -> None:
+        dut = PixelStreamFrameMetadata(line_pixels=1, frame_lines=1)
+        self.assertEqual(dut.step(True, 10, True), (True, False, 0, False, False, False, False))
+        self.assertEqual(dut.step(True, 11, True), (True, True, 10, True, True, True, True))
+        self.assertEqual(dut.step(False, 0, True), (True, True, 11, True, True, True, True))
+
     def test_validates_parameters_and_input_width(self) -> None:
         with self.assertRaises(ValueError):
             PixelStreamFrameMetadata(frame_lines=0)

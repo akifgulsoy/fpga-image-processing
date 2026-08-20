@@ -36,7 +36,8 @@ remains aligned with its pixel, including during downstream stalls.
 
 `pixel_stream_frame_metadata` generates SOL/EOL and start/end-of-frame (SOF/EOF)
 markers from configurable line and frame dimensions while preserving the
-ready/valid stream contract.
+ready/valid stream contract, including one-pixel frames where every marker is
+asserted for every transfer.
 
 `axi4s_video_adapter` accepts an AXI4-Stream video input, mapping `TUSER[0]`
 to SOF and `TLAST` to EOL through a registered ready/valid boundary.

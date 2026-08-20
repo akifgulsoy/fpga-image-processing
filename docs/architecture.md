@@ -64,6 +64,8 @@ stable whenever downstream backpressure is asserted.
 bounds and `SOF` and `EOF` at the first and last pixels of the configured
 frame. Column and line counters advance only when an input transfer is
 accepted, so all markers and their pixel remain stable during backpressure.
+With both dimensions set to one, every accepted pixel is simultaneously the
+start and end of its line and frame; the counters wrap after each transfer.
 
 ## AXI4-Stream video adapter
 
