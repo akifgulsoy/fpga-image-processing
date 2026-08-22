@@ -92,7 +92,7 @@ When Icarus Verilog is installed, run the complete local suite:
 ```
 
 GitHub Actions runs both the Python and RTL tests on every push and pull
-request.
+request. It also runs a Yosys synthesis smoke test for every RTL block.
 
 ## Design goals
 

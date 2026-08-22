@@ -25,6 +25,9 @@ jobs:
       - name: Install Icarus Verilog
         run: sudo apt-get update && sudo apt-get install -y iverilog
 
+      - name: Install Yosys
+        run: sudo apt-get install -y yosys
+
       - name: Compile and run RTL testbenches
         run: |
           mkdir -p build
@@ -46,4 +49,10 @@ jobs:
               rtl/${rtl}.sv \
               tb/tb_${testbench}.sv
             vvp build/${testbench}.vvp
+          done
+
+      - name: Run Yosys synthesis smoke tests
+        run: |
+          for block in rgb_to_grayscale threshold_to_mask brightness_contrast pixel_stream_register_slice pixel_stream_line_metadata pixel_stream_frame_metadata axi4s_video_adapter three_line_buffer convolution_window_3x3 sobel_xy gradient_magnitude; do
+            yosys -p "read_verilog -sv rtl/${block}.sv; hierarchy -check -top ${block}; synth -top ${block}; stat"
           done

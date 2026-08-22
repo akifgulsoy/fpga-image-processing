@@ -9,6 +9,13 @@ Blocks use a ready/valid pixel stream:
 - A producer holds payload and `valid` stable while `ready` is low.
 - Reset is asynchronous and active low.
 
+## Synthesis smoke tests
+
+GitHub Actions reads each RTL block with Yosys, checks its declared top module,
+and synthesizes it independently. This catches unsupported or non-synthesizable
+SystemVerilog constructs without tying the project to a vendor-specific FPGA
+target.
+
 The initial grayscale block contains one output register. It accepts a new
 pixel whenever that register is empty or the downstream block consumes its
 current value. This permits one pixel per clock without dropping data during
