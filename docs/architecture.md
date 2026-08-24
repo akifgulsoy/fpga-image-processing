@@ -16,6 +16,10 @@ and synthesizes it independently. This catches unsupported or non-synthesizable
 SystemVerilog constructs without tying the project to a vendor-specific FPGA
 target.
 
+The same CI workflow runs every self-checking testbench with both Icarus
+Verilog and Verilator. The two simulators provide independent event-scheduling
+and language-support coverage for the ready/valid RTL regressions.
+
 The initial grayscale block contains one output register. It accepts a new
 pixel whenever that register is empty or the downstream block consumes its
 current value. This permits one pixel per clock without dropping data during

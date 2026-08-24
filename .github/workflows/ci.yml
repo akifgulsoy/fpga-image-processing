@@ -25,6 +25,9 @@ jobs:
       - name: Install Icarus Verilog
         run: sudo apt-get update && sudo apt-get install -y iverilog
 
+      - name: Install Verilator
+        run: sudo apt-get install -y verilator
+
       - name: Install Yosys
         run: sudo apt-get install -y yosys
 
@@ -49,6 +52,32 @@ jobs:
               rtl/${rtl}.sv \
               tb/tb_${testbench}.sv
             vvp build/${testbench}.vvp
+          done
+
+      - name: Run RTL testbenches with Verilator
+        run: |
+          for block in rgb_to_grayscale threshold_to_mask brightness_contrast pixel_stream_register_slice pixel_stream_line_metadata pixel_stream_frame_metadata axi4s_video_adapter three_line_buffer convolution_window_3x3 sobel_xy gradient_magnitude; do
+            verilator --binary --timing -Wall -Wno-fatal \
+              --Mdir build/verilator_${block} \
+              --top-module tb_${block} \
+              -o simulation \
+              rtl/${block}.sv \
+              tb/tb_${block}.sv
+            build/verilator_${block}/simulation
+          done
+
+          for testbench in convolution_window_single_pixel pixel_stream_frame_metadata_single_pixel; do
+            case "${testbench}" in
+              convolution_window_single_pixel) rtl=convolution_window_3x3 ;;
+              pixel_stream_frame_metadata_single_pixel) rtl=pixel_stream_frame_metadata ;;
+            esac
+            verilator --binary --timing -Wall -Wno-fatal \
+              --Mdir build/verilator_${testbench} \
+              --top-module tb_${testbench} \
+              -o simulation \
+              rtl/${rtl}.sv \
+              tb/tb_${testbench}.sv
+            build/verilator_${testbench}/simulation
           done
 
       - name: Run Yosys synthesis smoke tests

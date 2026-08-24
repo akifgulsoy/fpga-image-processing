@@ -91,8 +91,9 @@ When Icarus Verilog is installed, run the complete local suite:
 .\scripts\run_tests.ps1 -RequireSimulator
 ```
 
-GitHub Actions runs both the Python and RTL tests on every push and pull
-request. It also runs a Yosys synthesis smoke test for every RTL block.
+GitHub Actions runs the Python tests plus every self-checking RTL testbench
+with both Icarus Verilog and Verilator on every push and pull request. It also
+runs a Yosys synthesis smoke test for every RTL block.
 
 ## Design goals
 
