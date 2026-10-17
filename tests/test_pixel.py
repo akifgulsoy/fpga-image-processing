@@ -228,6 +228,49 @@ class ThreeLineBufferTests(unittest.TestCase):
 
 
 class ConvolutionWindow3x3Tests(unittest.TestCase):
+    def test_raster_coordinates_and_stalls_for_all_border_modes(self) -> None:
+        # Calculate expected windows without the model's line-buffer logic.
+        for width in (1, 2, 3, 5):
+            samples = list(range(1, 4 * width + 1))
+            for left in (False, True):
+                for top in (False, True):
+                    with self.subTest(width=width, left=left, top=top):
+                        expected = []
+                        for index in range(len(samples)):
+                            row, column = divmod(index, width)
+                            window = []
+                            for y in range(row - 2, row + 1):
+                                for x in range(column - 2, column + 1):
+                                    if (y < 0 and not top) or (x < 0 and not left):
+                                        window.append(0)
+                                    else:
+                                        window.append(samples[max(y, 0) * width + max(x, 0)])
+                            expected.append(tuple(window))
+
+                        dut = ConvolutionWindow3x3(
+                            line_pixels=width,
+                            replicate_left_border=left,
+                            replicate_top_border=top,
+                        )
+                        sent = received = cycle = 0
+                        offered = False
+                        while received < len(samples):
+                            self.assertLess(cycle, 10 * len(samples) + 10)
+                            if not offered and sent < len(samples) and cycle % 5 != 0:
+                                offered = True
+                            ready = cycle % 4 not in (1, 2)
+                            pixel = samples[sent] if offered else 0
+                            s_ready, m_valid, window = dut.step(offered, pixel, ready)
+                            if m_valid:
+                                self.assertEqual(window, expected[received])
+                                if ready:
+                                    received += 1
+                            if offered and s_ready:
+                                sent += 1
+                                offered = False
+                            cycle += 1
+                        self.assertEqual(sent, len(samples))
+
     def test_generates_raster_windows_with_zero_filled_borders(self) -> None:
         dut = ConvolutionWindow3x3(line_pixels=3)
         samples = [10, 11, 12, 20, 21, 22, 30, 31, 32]
