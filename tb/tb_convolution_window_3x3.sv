@@ -82,9 +82,18 @@ module tb_convolution_window_3x3;
             end
         end
 
-        m_ready_i = 1'b1;
+        // Reset with a pending output partway through a line. The next pixel
+        // must start a fresh raster, even though the old output was stalled.
+        rst_ni = 1'b0;
+        #1;
+        if (m_valid_o || !s_ready_o) $fatal(1, "Reset did not discard pending window");
         @(negedge clk_i);
-        if (!s_ready_o) $fatal(1, "Input did not become ready after stall");
+        rst_ni = 1'b1;
+        m_ready_i = 1'b1;
+        send_and_check(8'd90, 90, 90, 90, 90, 90, 90, 90, 90, 90);
+        send_and_check(8'd91, 90, 90, 91, 90, 90, 91, 90, 90, 91);
+        send_and_check(8'd92, 90, 91, 92, 90, 91, 92, 90, 91, 92);
+        send_and_check(8'd93, 90, 90, 90, 90, 90, 90, 93, 93, 93);
         $display("PASS: convolution_window_3x3");
         $finish;
     end
