@@ -94,6 +94,31 @@ module tb_convolution_window_3x3;
         send_and_check(8'd91, 90, 90, 91, 90, 90, 91, 90, 90, 91);
         send_and_check(8'd92, 90, 91, 92, 90, 91, 92, 90, 91, 92);
         send_and_check(8'd93, 90, 90, 90, 90, 90, 90, 93, 93, 93);
+
+        // Hold the next input valid across a stall at the start of a line.
+        // Neither raster position nor history may advance until it transfers.
+        m_ready_i = 1'b0;
+        s_valid_i = 1'b1;
+        s_pixel_i = 8'd94;
+        repeat (3) begin
+            @(negedge clk_i);
+            if (s_ready_o || !m_valid_o || m_top_left_o !== 90 ||
+                m_top_mid_o !== 90 || m_top_right_o !== 90 ||
+                m_mid_left_o !== 90 || m_mid_mid_o !== 90 ||
+                m_mid_right_o !== 90 || m_bot_left_o !== 93 ||
+                m_bot_mid_o !== 93 || m_bot_right_o !== 93) begin
+                $fatal(1, "Pending window changed while input was held valid");
+            end
+        end
+        m_ready_i = 1'b1;
+        @(negedge clk_i);
+        s_valid_i = 1'b0;
+        if (!m_valid_o || m_top_left_o !== 90 || m_top_mid_o !== 90 ||
+            m_top_right_o !== 91 || m_mid_left_o !== 90 ||
+            m_mid_mid_o !== 90 || m_mid_right_o !== 91 ||
+            m_bot_left_o !== 93 || m_bot_mid_o !== 93 || m_bot_right_o !== 94) begin
+            $fatal(1, "Held input did not produce the next raster window");
+        end
         $display("PASS: convolution_window_3x3");
         $finish;
     end
