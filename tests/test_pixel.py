@@ -377,24 +377,28 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
         )
 
     def test_reset_discards_stalled_window_and_raster_history(self) -> None:
-        for left in (False, True):
-            for top in (False, True):
-                with self.subTest(left=left, top=top):
-                    options = dict(line_pixels=3, replicate_left_border=left,
-                                   replicate_top_border=top)
-                    dut = ConvolutionWindow3x3(**options)
-                    for pixel in (10, 11, 12, 20):
-                        dut.step(True, pixel, True)
-                    self.assertEqual(dut.step(True, 21, False)[:2], (False, True))
-                    dut.reset()
-                    fresh = ConvolutionWindow3x3(**options)
-                    for valid, pixel, ready in (
-                        (False, 0, False), (True, 90, False),
-                        (True, 91, False), (True, 91, True),
-                        (True, 92, True), (True, 93, True), (False, 0, True),
-                    ):
-                        self.assertEqual(dut.step(valid, pixel, ready),
-                                         fresh.step(valid, pixel, ready))
+        for width in (1, 3):
+            for left in (False, True):
+                for top in (False, True):
+                    with self.subTest(width=width, left=left, top=top):
+                        options = dict(
+                            line_pixels=width,
+                            replicate_left_border=left,
+                            replicate_top_border=top,
+                        )
+                        dut = ConvolutionWindow3x3(**options)
+                        for pixel in (10, 11, 12, 20):
+                            dut.step(True, pixel, True)
+                        self.assertEqual(dut.step(True, 21, False)[:2], (False, True))
+                        dut.reset()
+                        fresh = ConvolutionWindow3x3(**options)
+                        for valid, pixel, ready in (
+                            (False, 0, False), (True, 90, False),
+                            (True, 91, False), (True, 91, True),
+                            (True, 92, True), (True, 93, True), (False, 0, True),
+                        ):
+                            self.assertEqual(dut.step(valid, pixel, ready),
+                                             fresh.step(valid, pixel, ready))
 
     def test_validates_parameters_and_input_width(self) -> None:
         with self.assertRaises(ValueError):

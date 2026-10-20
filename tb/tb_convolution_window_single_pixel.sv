@@ -75,9 +75,16 @@ module tb_convolution_window_single_pixel;
             end
         end
 
-        m_ready_i = 1'b1;
+        // Reset must discard the stalled window and all single-pixel-line
+        // history, then permit a fresh raster with both border policies on.
+        rst_ni = 1'b0;
+        #1;
+        if (m_valid_o || !s_ready_o) $fatal(1, "Reset did not discard pending window");
         @(negedge clk_i);
-        if (!s_ready_o) $fatal(1, "Input did not become ready after stall");
+        rst_ni = 1'b1;
+        m_ready_i = 1'b1;
+        send_and_check(8'd90, 8'd90, 8'd90, 8'd90);
+        send_and_check(8'd91, 8'd90, 8'd90, 8'd91);
         $display("PASS: convolution_window_single_pixel");
         $finish;
     end
