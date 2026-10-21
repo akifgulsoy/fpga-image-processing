@@ -400,6 +400,34 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
                             self.assertEqual(dut.step(valid, pixel, ready),
                                              fresh.step(valid, pixel, ready))
 
+    def test_reset_discards_transferable_window_and_raster_history(self) -> None:
+        """Reset wins even when the registered window would be consumed next."""
+
+        for width in (1, 3):
+            for left in (False, True):
+                for top in (False, True):
+                    with self.subTest(width=width, left=left, top=top):
+                        options = dict(
+                            line_pixels=width,
+                            replicate_left_border=left,
+                            replicate_top_border=top,
+                        )
+                        dut = ConvolutionWindow3x3(**options)
+                        for pixel in (10, 11, 12, 20):
+                            dut.step(True, pixel, True)
+                        # The pending output is transferable because ready is
+                        # high, but reset occurs before its next clock edge.
+                        self.assertEqual(dut.step(True, 21, True)[:2], (True, True))
+                        dut.reset()
+                        fresh = ConvolutionWindow3x3(**options)
+                        for valid, pixel, ready in (
+                            (False, 0, True), (True, 90, True),
+                            (True, 91, False), (True, 91, True),
+                            (False, 0, True),
+                        ):
+                            self.assertEqual(dut.step(valid, pixel, ready),
+                                             fresh.step(valid, pixel, ready))
+
     def test_validates_parameters_and_input_width(self) -> None:
         with self.assertRaises(ValueError):
             ConvolutionWindow3x3(line_pixels=0)

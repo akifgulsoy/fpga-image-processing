@@ -58,19 +58,34 @@ module tb_convolution_window_single_pixel;
         send_and_check(8'd10, 8'd10, 8'd10, 8'd10);
         send_and_check(8'd20, 8'd10, 8'd10, 8'd20);
 
+        // Reset also wins over an output that is ready to transfer on the
+        // following rising edge, so it must begin a new raster.
+        @(negedge clk_i);
+        s_pixel_i = 8'd30;
+        s_valid_i = 1'b1;
+        @(negedge clk_i);
+        s_valid_i = 1'b0;
+        if (!m_valid_o || m_bot_right_o !== 30) $fatal(1, "Expected transferable window");
+        rst_ni = 1'b0;
+        #1;
+        if (m_valid_o || !s_ready_o) $fatal(1, "Reset did not discard transferable window");
+        @(negedge clk_i);
+        rst_ni = 1'b1;
+        send_and_check(8'd40, 8'd40, 8'd40, 8'd40);
+
         @(negedge clk_i);
         m_ready_i = 1'b0;
-        s_pixel_i = 8'd30;
+        s_pixel_i = 8'd50;
         s_valid_i = 1'b1;
         @(negedge clk_i);
         s_valid_i = 1'b0;
         repeat (3) begin
             @(negedge clk_i);
-            if (!m_valid_o || m_top_left_o !== 10 || m_top_mid_o !== 10 ||
-                m_top_right_o !== 10 || m_mid_left_o !== 20 ||
-                m_mid_mid_o !== 20 || m_mid_right_o !== 20 ||
-                m_bot_left_o !== 30 || m_bot_mid_o !== 30 ||
-                m_bot_right_o !== 30 || s_ready_o) begin
+            if (!m_valid_o || m_top_left_o !== 40 || m_top_mid_o !== 40 ||
+                m_top_right_o !== 40 || m_mid_left_o !== 40 ||
+                m_mid_mid_o !== 40 || m_mid_right_o !== 40 ||
+                m_bot_left_o !== 50 || m_bot_mid_o !== 50 ||
+                m_bot_right_o !== 50 || s_ready_o) begin
                 $fatal(1, "Window or ready changed while downstream was stalled");
             end
         end
