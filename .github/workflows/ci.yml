@@ -42,9 +42,9 @@ jobs:
             vvp build/${block}.vvp
           done
 
-          for testbench in convolution_window_single_pixel pixel_stream_frame_metadata_single_pixel; do
+          for testbench in convolution_window_zero_border convolution_window_single_pixel pixel_stream_frame_metadata_single_pixel; do
             case "${testbench}" in
-              convolution_window_single_pixel) rtl=convolution_window_3x3 ;;
+              convolution_window_zero_border|convolution_window_single_pixel) rtl=convolution_window_3x3 ;;
               pixel_stream_frame_metadata_single_pixel) rtl=pixel_stream_frame_metadata ;;
             esac
             iverilog -g2012 -Wall \
@@ -66,9 +66,9 @@ jobs:
             build/verilator_${block}/simulation
           done
 
-          for testbench in convolution_window_single_pixel pixel_stream_frame_metadata_single_pixel; do
+          for testbench in convolution_window_zero_border convolution_window_single_pixel pixel_stream_frame_metadata_single_pixel; do
             case "${testbench}" in
-              convolution_window_single_pixel) rtl=convolution_window_3x3 ;;
+              convolution_window_zero_border|convolution_window_single_pixel) rtl=convolution_window_3x3 ;;
               pixel_stream_frame_metadata_single_pixel) rtl=pixel_stream_frame_metadata ;;
             esac
             verilator --binary --timing -Wall -Wno-fatal \

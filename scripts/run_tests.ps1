@@ -31,6 +31,7 @@ try {
         @{ Name = "pixel_stream_register_slice"; Rtl = "rtl/pixel_stream_register_slice.sv"; Tb = "tb/tb_pixel_stream_register_slice.sv" },
         @{ Name = "three_line_buffer"; Rtl = "rtl/three_line_buffer.sv"; Tb = "tb/tb_three_line_buffer.sv" },
         @{ Name = "convolution_window_3x3"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_3x3.sv" },
+        @{ Name = "convolution_window_zero_border"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_zero_border.sv" },
         @{ Name = "convolution_window_single_pixel"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_single_pixel.sv" },
         @{ Name = "sobel_xy"; Rtl = "rtl/sobel_xy.sv"; Tb = "tb/tb_sobel_xy.sv" },
         @{ Name = "pixel_stream_line_metadata"; Rtl = "rtl/pixel_stream_line_metadata.sv"; Tb = "tb/tb_pixel_stream_line_metadata.sv" },
