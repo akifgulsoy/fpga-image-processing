@@ -63,7 +63,9 @@ module tb_convolution_window_zero_border;
         // Hold a second-row-history window while offering the next input.
         // The default zero-filled border and all payload entries must remain
         // stable until the output transfer makes room for the input.
-        @(negedge clk_i);
+        // send_and_check returns at a falling edge with the pixel-30 window
+        // still valid. Stall immediately so the following rising edge cannot
+        // consume that window before the backpressure checks begin.
         m_ready_i = 1'b0;
         s_pixel_i = 8'd31;
         s_valid_i = 1'b1;
