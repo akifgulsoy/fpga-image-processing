@@ -95,6 +95,16 @@ GitHub Actions runs the Python tests plus every self-checking RTL testbench
 with both Icarus Verilog and Verilator on every push and pull request. It also
 runs a Yosys synthesis smoke test for every RTL block.
 
+For a reproducible implementation report, CI synthesizes and places the
+`rgb_to_grayscale` stage for a Lattice iCE40HX8K in the CT256 package at a
+25 MHz target clock. The `ice40-rgb-to-grayscale-report` workflow artifact
+contains the exact Yosys and nextpnr versions, resource summary, and timing
+result. Run the same flow on a system with Yosys and nextpnr-ice40 installed:
+
+```bash
+bash scripts/report_ice40_resources.sh
+```
+
 ## Design goals
 
 - Synthesizable, vendor-neutral SystemVerilog

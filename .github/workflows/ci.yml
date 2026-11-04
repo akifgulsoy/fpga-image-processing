@@ -31,6 +31,9 @@ jobs:
       - name: Install Yosys
         run: sudo apt-get install -y yosys
 
+      - name: Install iCE40 place-and-route tools
+        run: sudo apt-get install -y nextpnr-ice40 fpga-icestorm
+
       - name: Compile and run RTL testbenches
         run: |
           mkdir -p build
@@ -85,3 +88,12 @@ jobs:
           for block in rgb_to_grayscale threshold_to_mask brightness_contrast pixel_stream_register_slice pixel_stream_line_metadata pixel_stream_frame_metadata axi4s_video_adapter three_line_buffer convolution_window_3x3 sobel_xy gradient_magnitude; do
             yosys -p "read_verilog -sv rtl/${block}.sv; hierarchy -check -top ${block}; synth -top ${block}; stat"
           done
+
+      - name: Report iCE40 grayscale resources and timing
+        run: bash scripts/report_ice40_resources.sh
+
+      - name: Upload iCE40 report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ice40-rgb-to-grayscale-report
+          path: build/ice40-rgb-to-grayscale-report.txt

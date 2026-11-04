@@ -20,6 +20,17 @@ The same CI workflow runs every self-checking testbench with both Icarus
 Verilog and Verilator. The two simulators provide independent event-scheduling
 and language-support coverage for the ready/valid RTL regressions.
 
+## FPGA implementation report
+
+The reproducible implementation target is a Lattice iCE40HX8K in the CT256
+package. `scripts/report_ice40_resources.sh` uses Yosys `synth_ice40` and
+nextpnr-ice40 with a 25 MHz target clock to synthesize and place
+`rgb_to_grayscale`. CI stores the exact tool versions, combined Yosys resource
+summary, and nextpnr timing result as the `ice40-rgb-to-grayscale-report`
+artifact. The flow leaves top-level pins unconstrained because this reusable
+block does not define a board; it therefore reports logic utilization and an
+internal clock estimate, not board-level I/O timing closure.
+
 The initial grayscale block contains one output register. It accepts a new
 pixel whenever that register is empty or the downstream block consumes its
 current value. This permits one pixel per clock without dropping data during

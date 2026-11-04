@@ -32,7 +32,7 @@ reference model, self-checking tests, and concise documentation.
 - [x] Grayscale-to-Sobel reference pipeline
 - [x] Verilator regression option
 - [x] Synthesis smoke test with Yosys
-- [ ] Resource and timing reports for a documented FPGA target
+- [x] Resource and timing reports for a documented FPGA target
 
 Benchmarks and hardware results will only be added when they can be reproduced
 from checked-in scripts and named tool versions.
