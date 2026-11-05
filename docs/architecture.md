@@ -115,7 +115,10 @@ window's left column repeat each available row's first pixel instead.
 `REPLICATE_TOP_BORDER` fills missing prior rows with the nearest available top
 row; both policies can be enabled together. Horizontal state resets at each
 fixed-width line boundary, including a one-pixel line, and all state advances
-only on a ready/valid input transfer.
+only on a ready/valid input transfer. When `FRAME_LINES` is nonzero, the final
+accepted pixel of each configured frame clears the two line histories and the
+row counter. The next accepted pixel is therefore a fresh top-left border,
+without requiring a separate flush transfer or carrying history across frames.
 
 ## Sobel X/Y kernels
 

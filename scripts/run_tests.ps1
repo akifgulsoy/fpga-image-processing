@@ -33,6 +33,7 @@ try {
         @{ Name = "convolution_window_3x3"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_3x3.sv" },
         @{ Name = "convolution_window_zero_border"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_zero_border.sv" },
         @{ Name = "convolution_window_single_pixel"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_single_pixel.sv" },
+        @{ Name = "convolution_window_frame_boundary"; Rtl = "rtl/convolution_window_3x3.sv"; Tb = "tb/tb_convolution_window_frame_boundary.sv" },
         @{ Name = "sobel_xy"; Rtl = "rtl/sobel_xy.sv"; Tb = "tb/tb_sobel_xy.sv" },
         @{ Name = "pixel_stream_line_metadata"; Rtl = "rtl/pixel_stream_line_metadata.sv"; Tb = "tb/tb_pixel_stream_line_metadata.sv" },
         @{ Name = "axi4s_video_adapter"; Rtl = "rtl/axi4s_video_adapter.sv"; Tb = "tb/tb_axi4s_video_adapter.sv" },

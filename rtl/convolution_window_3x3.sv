@@ -1,6 +1,7 @@
 module convolution_window_3x3 #(
     parameter int unsigned PIXEL_WIDTH = 8,
     parameter int unsigned LINE_PIXELS = 640,
+    parameter int unsigned FRAME_LINES = 0,
     parameter bit REPLICATE_LEFT_BORDER = 1'b0,
     parameter bit REPLICATE_TOP_BORDER = 1'b0
 ) (
@@ -26,10 +27,13 @@ module convolution_window_3x3 #(
 
     localparam int unsigned COLUMN_WIDTH =
         (LINE_PIXELS > 1) ? $clog2(LINE_PIXELS) : 1;
+    localparam int unsigned FRAME_LINE_WIDTH =
+        (FRAME_LINES > 1) ? $clog2(FRAME_LINES) : 1;
 
     logic [PIXEL_WIDTH-1:0] line1_mem [0:LINE_PIXELS-1];
     logic [PIXEL_WIDTH-1:0] line2_mem [0:LINE_PIXELS-1];
     logic [COLUMN_WIDTH-1:0] column_q;
+    logic [FRAME_LINE_WIDTH-1:0] frame_line_q;
     logic [1:0] row_count_q;
     logic [PIXEL_WIDTH-1:0] top_left_q;
     logic [PIXEL_WIDTH-1:0] top_mid_q;
@@ -56,6 +60,7 @@ module convolution_window_3x3 #(
             m_bot_mid_o   <= '0;
             m_bot_right_o <= '0;
             column_q      <= '0;
+            frame_line_q  <= '0;
             row_count_q   <= '0;
             top_left_q    <= '0;
             top_mid_q     <= '0;
@@ -151,8 +156,21 @@ module convolution_window_3x3 #(
 
                 if (column_q == LINE_PIXELS - 1) begin
                     column_q   <= '0;
-                    if (row_count_q != 2'd2) begin
-                        row_count_q <= row_count_q + 1'b1;
+                    if ((FRAME_LINES != 0) &&
+                        (frame_line_q == FRAME_LINES - 1)) begin
+                        frame_line_q <= '0;
+                        row_count_q  <= '0;
+                        for (index = 0; index < LINE_PIXELS; index = index + 1) begin
+                            line1_mem[index] <= '0;
+                            line2_mem[index] <= '0;
+                        end
+                    end else begin
+                        if (FRAME_LINES != 0) begin
+                            frame_line_q <= frame_line_q + 1'b1;
+                        end
+                        if (row_count_q != 2'd2) begin
+                            row_count_q <= row_count_q + 1'b1;
+                        end
                     end
                     top_left_q <= '0;
                     top_mid_q  <= '0;

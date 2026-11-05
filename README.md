@@ -50,7 +50,9 @@ The first two rows use zero-filled history after reset.
 into a 3x3 window suitable for streaming convolution kernels. Its default
 zero-filled borders can optionally replicate the available left-edge pixel
 into the window's left column and/or the available top-row pixels. It also
-supports one-pixel raster lines, including both border-policy modes.
+supports one-pixel raster lines, including both border-policy modes. Its
+optional `FRAME_LINES` parameter clears raster history at each frame boundary,
+preventing pixels from one frame from becoming top-border history for the next.
 
 `sobel_xy` applies signed Sobel X and Y kernels to a 3x3 grayscale window.
 For 8-bit input pixels, each result is an 11-bit signed gradient.

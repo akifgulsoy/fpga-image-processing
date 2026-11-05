@@ -366,6 +366,20 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
                 dut.step(True, pixel, True)
                 self.assertEqual(dut.step(False, 0, True), (True, True, window))
 
+    def test_clears_history_at_configured_frame_boundary(self) -> None:
+        dut = ConvolutionWindow3x3(line_pixels=2, frame_lines=2)
+        samples = [10, 11, 20, 21, 30]
+        expected = [
+            (0, 0, 0, 0, 0, 0, 0, 0, 10),
+            (0, 0, 0, 0, 0, 0, 0, 10, 11),
+            (0, 0, 0, 0, 0, 10, 0, 0, 20),
+            (0, 0, 0, 0, 10, 11, 0, 20, 21),
+            (0, 0, 0, 0, 0, 0, 0, 0, 30),
+        ]
+        for pixel, window in zip(samples, expected):
+            dut.step(True, pixel, True)
+            self.assertEqual(dut.step(False, 0, True), (True, True, window))
+
     def test_holds_window_during_backpressure(self) -> None:
         dut = ConvolutionWindow3x3(line_pixels=2)
         dut.step(True, 7, False)
@@ -431,6 +445,10 @@ class ConvolutionWindow3x3Tests(unittest.TestCase):
     def test_validates_parameters_and_input_width(self) -> None:
         with self.assertRaises(ValueError):
             ConvolutionWindow3x3(line_pixels=0)
+        with self.assertRaises(ValueError):
+            ConvolutionWindow3x3(frame_lines=-1)
+        with self.assertRaises(TypeError):
+            ConvolutionWindow3x3(frame_lines=True)
         dut = ConvolutionWindow3x3(pixel_width=4, line_pixels=1)
         with self.assertRaises(ValueError):
             dut.step(True, 16, True)

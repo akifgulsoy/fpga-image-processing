@@ -259,22 +259,26 @@ class ConvolutionWindow3x3:
     """Cycle-accurate model of a 3x3 raster window with border policies."""
 
     def __init__(self, pixel_width: int = 8, line_pixels: int = 640,
+                 frame_lines: int = 0,
                  replicate_left_border: bool = False,
                  replicate_top_border: bool = False) -> None:
         if not isinstance(pixel_width, int) or isinstance(pixel_width, bool):
             raise TypeError("pixel_width must be an integer")
         if not isinstance(line_pixels, int) or isinstance(line_pixels, bool):
             raise TypeError("line_pixels must be an integer")
+        if not isinstance(frame_lines, int) or isinstance(frame_lines, bool):
+            raise TypeError("frame_lines must be an integer")
         if pixel_width <= 0:
             raise ValueError("pixel_width must be positive")
-        if line_pixels <= 0:
-            raise ValueError("line_pixels must be positive")
+        if line_pixels <= 0 or frame_lines < 0:
+            raise ValueError("line_pixels must be positive and frame_lines non-negative")
         if not isinstance(replicate_left_border, bool):
             raise TypeError("replicate_left_border must be a boolean")
         if not isinstance(replicate_top_border, bool):
             raise TypeError("replicate_top_border must be a boolean")
         self.pixel_width = pixel_width
         self.line_pixels = line_pixels
+        self.frame_lines = frame_lines
         self.replicate_left_border = replicate_left_border
         self.replicate_top_border = replicate_top_border
         self.reset()
@@ -284,6 +288,7 @@ class ConvolutionWindow3x3:
 
         self.column = 0
         self.row_count = 0
+        self.frame_line = 0
         self.line1 = [0] * self.line_pixels
         self.line2 = [0] * self.line_pixels
         self.top_left = self.top_mid = 0
@@ -349,7 +354,15 @@ class ConvolutionWindow3x3:
                 self.line1[self.column] = s_pixel
                 if self.column == self.line_pixels - 1:
                     self.column = 0
-                    self.row_count = min(self.row_count + 1, 2)
+                    if self.frame_lines and self.frame_line == self.frame_lines - 1:
+                        self.frame_line = 0
+                        self.row_count = 0
+                        self.line1 = [0] * self.line_pixels
+                        self.line2 = [0] * self.line_pixels
+                    else:
+                        if self.frame_lines:
+                            self.frame_line += 1
+                        self.row_count = min(self.row_count + 1, 2)
                     self.top_left = self.top_mid = 0
                     self.mid_left = self.mid_mid = 0
                     self.bot_left = self.bot_mid = 0
