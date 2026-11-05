@@ -42,6 +42,9 @@ module tb_convolution_window_frame_boundary;
         send_and_check(8'd21, 0, 0, 0, 0, 10, 11, 0, 20, 21);
 
         // The prior frame's two-line history must not leak into this pixel.
+        // First consume the prior frame's final window before stalling the
+        // first window of the next frame.
+        @(negedge clk_i);
         m_ready_i = 1'b0; s_pixel_i = 8'd30; s_valid_i = 1'b1;
         @(negedge clk_i); s_valid_i = 1'b0;
         repeat (2) begin
